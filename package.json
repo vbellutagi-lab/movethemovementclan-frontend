@@ -1,0 +1,34 @@
+{
+  "name": "@repo-mv/landing",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --port 3001",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint --max-warnings 0",
+    "check-types": "next typegen && tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@repo-mv/trpc": "workspace:*",
+    "@t3-oss/env-nextjs": "^0.13.11",
+    "@tanstack/react-query": "^5.101.0",
+    "@trpc/react-query": "^11.17.0",
+    "next": "^15.5.0",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@repo-mv/eslint-config": "workspace:*",
+    "@repo-mv/typescript-config": "workspace:*",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "eslint": "^9.39.4",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.6"
+  }
+}
