@@ -1,0 +1,5 @@
+/* Move brand faces. Zen Dots (display / headings) + Montserrat (body, UI, data).
+   Both are Google Fonts, served from the Google Fonts CDN — the brand PDF named the
+   families but shipped no binaries. Swap these @import lines for local @font-face
+   rules if licensed files arrive. */
+@import url("https://fonts.googleapis.com/css2?family=Zen+Dots&family=Montserrat:ital,wght@0,300..900;1,300..900&display=swap");

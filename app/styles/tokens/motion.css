@@ -1,0 +1,11 @@
+:root{
+  /* Motion is reserved: booking confirm, credit change, schedule reveal. Nothing ambient. */
+  --ease-out:cubic-bezier(.2,.8,.28,1); /* @kind other */
+  --ease-in-out:cubic-bezier(.62,.03,.32,1); /* @kind other */
+  --ease-load:cubic-bezier(.34,.02,.06,1); /* @kind other */   /* weighted, like a lift */
+  --dur-instant:90ms; /* @kind other */
+  --dur-fast:160ms; /* @kind other */
+  --dur-base:240ms; /* @kind other */
+  --dur-slow:420ms; /* @kind other */
+  --dur-reveal:640ms; /* @kind other */
+}

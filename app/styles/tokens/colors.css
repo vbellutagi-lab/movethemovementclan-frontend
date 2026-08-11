@@ -1,0 +1,52 @@
+/* Palette is verbatim from Move.Brand.pdf ("Colors" board).
+   Primary: 110E0C, e0b569 — Secondary: EFEFEF, 4E4E4D, C6A96E
+   Everything below the BRAND block is derived from those five values only. */
+:root{
+  /* ---- BRAND (exact, from the brand book) ---- */
+  --move-black:#110E0C;
+  --move-gold:#E0B569;
+  --move-bone:#EFEFEF;
+  --move-graphite:#4E4E4D;
+  --move-bronze:#C6A96E;
+
+  /* ---- Derived neutral ramp (black lifted toward graphite) ---- */
+  --ink-900:#110E0C;
+  --ink-850:#171310;
+  --ink-800:#1C1814;
+  --ink-700:#231E19;
+  --ink-600:#2C2621;
+  --ink-500:#3A332C;
+  --ink-400:#4E4E4D;
+  --ink-300:#6E6C68;
+  --ink-200:#9B9895;
+  --ink-100:#C9C6C2;
+  --ink-050:#EFEFEF;
+
+  /* ---- Derived gold ramp ---- */
+  --gold-100:#F5E3C4;
+  --gold-200:#EBD0A0;
+  --gold-300:#E0B569;
+  --gold-400:#C6A96E;
+  --gold-500:#A2883F;
+  --gold-600:#6B5A2C;
+  --gold-700:#3A3220;
+
+  /* ---- Semantic status (gold-family hues only, plus two functional signals) ---- */
+  --signal-go:#7FA86A;
+  --signal-go-dim:#2A331F;
+  --signal-stop:#B4553F;
+  --signal-stop-dim:#33201B;
+  --signal-hold:#E0B569;
+  --signal-hold-dim:#33291B;
+
+  /* ---- Session-type encoding (the wayfinding system) ---- */
+  --sgpt:#E0B569;
+  --sgpt-ink:#110E0C;
+  --sgpt-dim:#332918;
+  --pt:#EFEFEF;
+  --pt-ink:#110E0C;
+  --pt-dim:#2C2A28;
+  --cond:#C6A96E;
+  --cond-ink:#C6A96E;
+  --cond-dim:#241F17;
+}

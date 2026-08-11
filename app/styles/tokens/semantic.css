@@ -1,0 +1,30 @@
+:root{
+  /* Move is a dark-first system. Light surfaces exist only for print + invoices. */
+  --bg-page:var(--ink-900);
+  --bg-raised:var(--ink-800);
+  --bg-sunken:#0C0A09;
+  --surface-card:var(--ink-850);
+  --surface-card-hover:var(--ink-700);
+  --surface-field:var(--ink-800);
+  --surface-inverse:var(--move-bone);
+
+  --text-primary:var(--move-bone);
+  --text-secondary:var(--ink-200);
+  --text-muted:var(--ink-300);
+  --text-accent:var(--move-gold);
+  --text-on-gold:var(--move-black);
+  --text-on-inverse:var(--move-black);
+
+  --border-hairline:var(--ink-600);
+  --border-strong-c:var(--ink-500);
+  --border-accent:var(--move-gold);
+  --border-field:var(--ink-500);
+
+  --accent:var(--move-gold);
+  --accent-hover:var(--gold-200);
+  --accent-press:var(--gold-400);
+  --focus-ring:0 0 0 2px var(--ink-900),0 0 0 4px var(--move-gold);
+
+  --link:var(--move-gold);
+  --link-hover:var(--gold-100);
+}

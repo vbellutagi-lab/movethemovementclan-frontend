@@ -1,0 +1,11 @@
+:root{
+  --radius-xs:4px;
+  --radius-sm:8px;
+  --radius-md:12px;
+  --radius-lg:16px;
+  --radius-xl:22px;
+  --radius-plate:28px;  /* echoes the plate glyph in the wordmark */
+  --radius-pill:999px;
+  --border-hair:1px;
+  --border-strong:2px;
+}
