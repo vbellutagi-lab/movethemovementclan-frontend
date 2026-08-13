@@ -1,4 +1,3 @@
-const isDev = process.env.NODE_ENV !== "production";
 const apiOrigin = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
 
 // tRPC calls the API server directly from the browser (credentials: "include");
