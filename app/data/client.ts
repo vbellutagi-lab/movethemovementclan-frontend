@@ -11,6 +11,13 @@ export const client = {
       "No 28, Modi Hospital Rd, West of Chord Road, Stage 2, Basaveshwar Nagar, Bengaluru, Karnataka 560079, India",
     hours: "05:30 – 22:00",
     phone: "+91 6366-385855",
+    whatsapp: "+91 6366-385855",
+    email: "movethemovementclan@gmail.com",
+  },
+
+  social: {
+    instagram: "https://www.instagram.com/_move_clan",
+    facebook: "https://www.facebook.com/people/MOVE-The-Movement-Clan/61593119798493/",
   },
 
   hero: {
@@ -213,7 +220,7 @@ export const client = {
   footer: {
     tagline: "One profile. Every coach. Zero gaps.",
     train: ["Small group PT", "Personal training", "Conditioning", "Plans"],
-    clan: ["Our coaches", "Careers", "Contact", "Client login"],
+    clan: ["Our coaches", "Contact", "Careers", "Client login"],
     year: 2026,
   },
 } as const;

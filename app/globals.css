@@ -283,9 +283,7 @@ a {
   gap: var(--space-5);
 }
 .mvCard {
-  --glow: 0deg;
   position: relative;
-  isolation: isolate;
   background: var(--surface-card);
   border: 1px solid var(--border-hairline);
   border-radius: var(--radius-md);
@@ -293,48 +291,14 @@ a {
   display: flex;
   flex-direction: column;
   transition:
-    transform 0.35s var(--ease-out),
-    border-color 0.35s var(--ease-out),
-    box-shadow 0.35s var(--ease-out);
-}
-.mvCard::before {
-  content: "";
-  position: absolute;
-  inset: -1px;
-  z-index: 2;
-  border-radius: inherit;
-  padding: 1.5px;
-  background: conic-gradient(from var(--glow), transparent 0deg, var(--move-gold) 40deg, transparent 90deg);
-  -webkit-mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  opacity: 0;
-  transition: opacity 0.35s ease;
-  animation: mv-glow-spin 2.6s linear infinite;
-  animation-play-state: paused;
-  pointer-events: none;
+    transform 0.3s var(--ease-out),
+    border-color 0.3s var(--ease-out),
+    box-shadow 0.3s var(--ease-out);
 }
 .mvCard:hover {
-  transform: translateY(-6px);
-  border-color: var(--gold-500);
-  box-shadow: var(--shadow-lg);
-}
-.mvCard:hover::before {
-  opacity: 1;
-  animation-play-state: running;
-}
-@media (prefers-reduced-motion: reduce) {
-  .mvCard::before {
-    animation: none;
-  }
-  .mvCard:hover {
-    transform: none;
-  }
+  transform: translateY(-4px);
+  border-color: var(--move-gold);
+  box-shadow: var(--glow-gold);
 }
 .mvCard .imgWrap {
   height: 180px;
@@ -416,7 +380,7 @@ a {
   display: grid;
   grid-template-columns: 1.1fr 1fr;
   gap: var(--space-10);
-  align-items: start;
+  align-items: center;
 }
 .mvAbout .copy {
   display: flex;
@@ -470,11 +434,11 @@ a {
   position: relative;
   border-radius: var(--radius-lg);
   overflow: hidden;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 3 / 2;
 }
 .mvAbout .photo img {
   object-fit: cover;
-  object-position: 28% 50%;
+  object-position: 35% 50%;
 }
 .mvAbout .photo .scrim {
   position: absolute;
@@ -494,6 +458,15 @@ a {
   border: 1px solid var(--border-hairline);
   border-radius: var(--radius-md);
   overflow: hidden;
+  transition:
+    transform 0.3s var(--ease-out),
+    border-color 0.3s var(--ease-out),
+    box-shadow 0.3s var(--ease-out);
+}
+.coachCard:hover {
+  transform: translateY(-4px);
+  border-color: var(--move-gold);
+  box-shadow: var(--glow-gold);
 }
 .coachCard .photo {
   position: relative;
@@ -556,6 +529,15 @@ a {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  transition:
+    transform 0.3s var(--ease-out),
+    border-color 0.3s var(--ease-out),
+    box-shadow 0.3s var(--ease-out);
+}
+.reviewCard:hover {
+  transform: translateY(-4px);
+  border-color: var(--move-gold);
+  box-shadow: var(--glow-gold);
 }
 .reviewCard p {
   font-size: 13.5px;
@@ -615,7 +597,8 @@ a {
   align-items: stretch;
 }
 .packCard {
-  --glow: 0deg;
+  --tiltX: 0deg;
+  --tiltY: 0deg;
   background: var(--surface-card);
   border: 1px solid var(--border-hairline);
   border-radius: var(--radius-lg);
@@ -624,70 +607,21 @@ a {
   flex-direction: column;
   gap: 16px;
   position: relative;
-  isolation: isolate;
   min-height: 100%;
+  transform-style: preserve-3d;
   transition:
-    transform 0.35s var(--ease-out),
-    border-color 0.35s var(--ease-out),
-    box-shadow 0.35s var(--ease-out);
-}
-.packCard::before {
-  content: "";
-  position: absolute;
-  inset: -1px;
-  z-index: -1;
-  border-radius: inherit;
-  padding: 1.5px;
-  background: conic-gradient(
-    from var(--glow),
-    transparent 0deg,
-    var(--move-gold) 40deg,
-    transparent 90deg
-  );
-  -webkit-mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  opacity: 0;
-  transition: opacity 0.35s ease;
-  animation: mv-glow-spin 2.6s linear infinite;
-  animation-play-state: paused;
-  pointer-events: none;
+    transform 0.15s var(--ease-out),
+    border-color 0.3s var(--ease-out),
+    box-shadow 0.3s var(--ease-out);
 }
 .packCard:hover {
-  transform: translateY(-8px);
-  border-color: var(--gold-500);
-  box-shadow: var(--shadow-lg);
-}
-.packCard:hover::before {
-  opacity: 1;
-  animation-play-state: running;
+  transform: perspective(900px) rotateX(var(--tiltX)) rotateY(var(--tiltY)) translateY(-4px);
+  border-color: var(--move-gold);
+  box-shadow: var(--glow-gold);
 }
 .packCard.featured {
   border-color: var(--move-gold);
   box-shadow: var(--rim-gold);
-}
-@keyframes mv-glow-spin {
-  to {
-    --glow: 360deg;
-  }
-}
-@property --glow {
-  syntax: "<angle>";
-  inherits: false;
-  initial-value: 0deg;
-}
-@media (prefers-reduced-motion: reduce) {
-  .packCard::before {
-    animation: none;
-  }
-  .packCard:hover {
-    transform: none;
-  }
 }
 .packCard .fBadge {
   position: absolute;
@@ -778,6 +712,7 @@ a {
 }
 .mvSplit.even {
   grid-template-columns: 1fr 1fr;
+  align-items: stretch;
 }
 .roleCard {
   border: 1px solid var(--border-hairline);
@@ -788,6 +723,15 @@ a {
   gap: 14px;
   margin-bottom: 12px;
   background: var(--surface-card);
+  transition:
+    transform 0.3s var(--ease-out),
+    border-color 0.3s var(--ease-out),
+    box-shadow 0.3s var(--ease-out);
+}
+.roleCard:hover {
+  transform: translateY(-4px);
+  border-color: var(--move-gold);
+  box-shadow: var(--glow-gold);
 }
 .roleCard .t {
   font-family: var(--font-display);
@@ -805,27 +749,40 @@ a {
 .centreCard {
   border: 1px solid var(--border-hairline);
   border-radius: var(--radius-md);
-  padding: var(--space-5);
+  padding: var(--space-6);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--space-5);
   background: var(--surface-card);
+  height: 100%;
+  transition:
+    transform 0.3s var(--ease-out),
+    border-color 0.3s var(--ease-out),
+    box-shadow 0.3s var(--ease-out);
 }
-.centreCard.selected {
+.centreCard:hover {
+  transform: translateY(-4px);
   border-color: var(--move-gold);
-  box-shadow: var(--rim-gold);
+  box-shadow: var(--glow-gold);
 }
 .centreCard .metaRow {
   display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 14px;
   font-size: 12.5px;
   color: var(--text-muted);
+  flex: 1;
 }
 .centreCard .metaRow span {
-  display: inline-flex;
-  gap: 6px;
-  align-items: center;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  line-height: 1.5;
+}
+.centreCard .metaRow span svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--move-gold);
 }
 
 .formCard {
@@ -836,6 +793,15 @@ a {
   display: flex;
   flex-direction: column;
   gap: 14px;
+  transition:
+    transform 0.3s var(--ease-out),
+    border-color 0.3s var(--ease-out),
+    box-shadow 0.3s var(--ease-out);
+}
+.formCard:hover {
+  transform: translateY(-4px);
+  border-color: var(--move-gold);
+  box-shadow: var(--glow-gold);
 }
 .field {
   display: flex;
@@ -898,6 +864,28 @@ a {
   color: var(--text-secondary);
   margin-bottom: 8px;
 }
+.mvFooter .socialRow {
+  display: flex;
+  gap: var(--space-4);
+  margin-top: var(--space-5);
+}
+.mvFooter .socialRow a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border-hairline);
+  border-radius: 50%;
+  color: var(--text-secondary);
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+.mvFooter .socialRow a:hover {
+  color: var(--move-gold);
+  border-color: var(--move-gold);
+}
 .mvFooter .bottom {
   display: flex;
   justify-content: space-between;
@@ -905,6 +893,40 @@ a {
   border-top: 1px solid var(--border-hairline);
   font-size: 11.5px;
   color: var(--ink-400);
+}
+
+/* ---------- whatsapp fab ---------- */
+
+.mvWhatsApp {
+  position: fixed;
+  right: var(--space-6);
+  bottom: var(--space-6);
+  z-index: 40;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #25d366;
+  color: #fff;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.mvWhatsApp:hover {
+  transform: scale(1.06);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.38);
+}
+
+@media (max-width: 640px) {
+  .mvWhatsApp {
+    right: var(--space-4);
+    bottom: var(--space-4);
+    width: 50px;
+    height: 50px;
+  }
 }
 
 /* ---------- scroll reveal ---------- */
@@ -926,6 +948,16 @@ a {
     opacity: 1 !important;
     transform: none !important;
     transition: none !important;
+  }
+  .mvCard:hover,
+  .packCard:hover,
+  .mvStat:hover,
+  .coachCard:hover,
+  .reviewCard:hover,
+  .roleCard:hover,
+  .centreCard:hover,
+  .formCard:hover {
+    transform: none;
   }
 }
 

@@ -1,16 +1,17 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { LogIn, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { env } from "../../env";
 
 const NAV = [
-  ["#sessions", "Sessions"],
-  ["#coaches", "Coaches"],
-  ["#pricing", "Plans"],
-  ["#careers", "Careers"],
-  ["#contact", "Contact"],
+  ["/#sessions", "Sessions"],
+  ["/#coaches", "Coaches"],
+  ["/#pricing", "Plans"],
+  ["/#contact", "Contact"],
+  ["/careers", "Careers"],
 ] as const;
 
 export function Header() {
@@ -21,10 +22,10 @@ export function Header() {
     <header className="mvHeader">
       <div className="mvPromo">
         Get Free Consultation Always ➟ join the clan this month
-        <a href="#contact">Book a consultation</a>
+        <Link href="/#contact">Book a consultation</Link>
       </div>
       <div className="mv-max mvHeadRow">
-        <a href="#" aria-label="Move — The Movement Clan" style={{ display: "flex" }}>
+        <Link href="/" aria-label="Move — The Movement Clan" style={{ display: "flex" }}>
           <Image
             src="/brand/logo-horizontal-light.png"
             alt="Move"
@@ -32,12 +33,12 @@ export function Header() {
             height={30}
             priority
           />
-        </a>
+        </Link>
         <nav className="mvNav">
           {NAV.map(([href, label]) => (
-            <a key={href} href={href}>
+            <Link key={href} href={href}>
               {label}
-            </a>
+            </Link>
           ))}
         </nav>
         <div className="mvHeadActions">
@@ -67,9 +68,9 @@ export function Header() {
             }}
           >
             {NAV.map(([href, label]) => (
-              <a key={href} href={href} onClick={() => setOpen(false)}>
+              <Link key={href} href={href} onClick={() => setOpen(false)}>
                 {label}
-              </a>
+              </Link>
             ))}
           </nav>
         </div>
