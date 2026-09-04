@@ -1,7 +1,9 @@
 {
-  "name": "@repo-mv/landing",
+  "name": "landing",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.33.1",
   "scripts": {
     "dev": "next dev --port 3001",
     "build": "next build",
@@ -12,10 +14,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@repo-mv/trpc": "workspace:*",
     "@t3-oss/env-nextjs": "^0.13.11",
-    "@tanstack/react-query": "^5.101.0",
-    "@trpc/react-query": "^11.17.0",
     "lucide-react": "^1.31.0",
     "next": "^15.5.0",
     "react": "^19.2.7",
@@ -23,13 +22,16 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@repo-mv/eslint-config": "workspace:*",
-    "@repo-mv/typescript-config": "workspace:*",
+    "@eslint/js": "^9.39.1",
+    "@next/eslint-plugin-next": "^15.5.0",
     "@types/node": "^22.0.0",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "eslint": "^9.39.4",
+    "eslint-config-prettier": "^10.1.1",
+    "eslint-plugin-only-warn": "^1.1.0",
     "typescript": "^5.9.3",
+    "typescript-eslint": "^8.50.0",
     "vitest": "^3.2.6"
   }
 }
