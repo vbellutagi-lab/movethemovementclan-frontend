@@ -10,6 +10,10 @@ export function Contact() {
   const telHref = `tel:${centre.phone.replace(/[\s-]/g, "")}`;
   const mailHref = `mailto:${centre.email}`;
   const [program, setProgram] = useState("");
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [message, setMessage] = useState("");
+  const [sent, setSent] = useState(false);
 
   useEffect(() => {
     const planId = new URLSearchParams(window.location.search).get("plan");
@@ -17,9 +21,29 @@ export function Contact() {
     if (tier) setProgram(tier.name);
   }, [plans.tiers]);
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    // UI only for v1 - no backend endpoint yet (see leads follow-up in the plan).
+  const enquiryType = program || "General enquiry";
+
+  const noteBody = [
+    "New enquiry from the Move website:",
+    `Name: ${name}`,
+    `Phone: ${phone}`,
+    `Enquiry type: ${enquiryType}`,
+    `Message: ${message || "-"}`,
+  ].join("\n");
+
+  function handleWhatsApp(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const digits = centre.whatsapp.replace(/[^\d]/g, "");
+    window.open(`https://wa.me/${digits}?text=${encodeURIComponent(noteBody)}`, "_blank", "noopener,noreferrer");
+    setSent(true);
+  }
+
+  function handleEmail(e: React.MouseEvent<HTMLButtonElement>) {
+    const form = e.currentTarget.form;
+    if (form && !form.reportValidity()) return;
+    const subject = `Website enquiry — ${enquiryType}`;
+    window.location.href = `mailto:${centre.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(noteBody)}`;
+    setSent(true);
   }
 
   return (
@@ -62,20 +86,43 @@ export function Contact() {
             Get directions
           </a>
         </div>
-        <form className="formCard" onSubmit={handleSubmit}>
+        <form className="formCard" onSubmit={handleWhatsApp}>
           <span className="move-label">Send a note</span>
           <label className="field">
             <span className="lbl">Name</span>
-            <input placeholder="Your name" required />
+            <input
+              placeholder="Your name"
+              required
+              value={name}
+              onChange={(e) => {
+                setName(e.target.value);
+                setSent(false);
+              }}
+            />
           </label>
           <label className="field">
             <span className="lbl">Phone</span>
-            <input placeholder="10-digit mobile" inputMode="tel" required />
+            <input
+              placeholder="10-digit mobile"
+              inputMode="tel"
+              required
+              value={phone}
+              onChange={(e) => {
+                setPhone(e.target.value);
+                setSent(false);
+              }}
+            />
           </label>
           <label className="field">
-            <span className="lbl">Program</span>
-            <select value={program} onChange={(e) => setProgram(e.target.value)}>
-              <option value="">General inquiry</option>
+            <span className="lbl">Enquiry type</span>
+            <select
+              value={program}
+              onChange={(e) => {
+                setProgram(e.target.value);
+                setSent(false);
+              }}
+            >
+              <option value="">General enquiry</option>
               {plans.tiers.map((t) => (
                 <option key={t.id} value={t.name}>
                   {t.name}
@@ -85,11 +132,29 @@ export function Contact() {
           </label>
           <label className="field">
             <span className="lbl">Message</span>
-            <textarea rows={3} placeholder="What are you training for?" />
+            <textarea
+              rows={3}
+              placeholder="What are you training for?"
+              value={message}
+              onChange={(e) => {
+                setMessage(e.target.value);
+                setSent(false);
+              }}
+            />
           </label>
-          <button type="submit" className="mvBtn primary block">
-            Send
-          </button>
+          <div className="formCta">
+            <button type="submit" className="mvBtn primary block">
+              Send via WhatsApp
+            </button>
+            <button type="button" className="mvBtn secondary block" onClick={handleEmail}>
+              Send via email
+            </button>
+          </div>
+          {sent ? (
+            <p className="formSent" role="status">
+              Message sent — we&apos;ll contact you soon.
+            </p>
+          ) : null}
         </form>
       </div>
     </section>

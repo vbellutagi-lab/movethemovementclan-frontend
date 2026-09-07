@@ -17,7 +17,8 @@ export const client = {
 
   social: {
     instagram: "https://www.instagram.com/_move_clan",
-    facebook: "https://www.facebook.com/people/MOVE-The-Movement-Clan/61593119798493/",
+    facebook:
+      "https://www.facebook.com/people/MOVE-The-Movement-Clan/61593119798493/",
   },
 
   hero: {
@@ -30,8 +31,16 @@ export const client = {
   },
 
   syncStrip: [
-    { icon: "users", title: "Group energy", detail: "Small groups, never a class." },
-    { icon: "target", title: "1-1 precision", detail: "Programming written for your body." },
+    {
+      icon: "users",
+      title: "Group energy",
+      detail: "Small groups, never a class.",
+    },
+    {
+      icon: "target",
+      title: "1-1 precision",
+      detail: "Programming written for your body.",
+    },
     {
       icon: "shield-check",
       title: "Omnipresent coaching",
@@ -71,37 +80,44 @@ export const client = {
     // Phrases from `body` to render in gold — exact substring matches, case-insensitive.
     highlights: ["injury history", "current maxes", "daily programming"],
     stats: [
-      { label: "Members", value: "480" },
-      { label: "Coaches", value: "11" },
-      { label: "Max group", value: "6" },
+      { label: "Members", value: "16" },
+      { label: "Coaches", value: "3" },
+      { label: "Max per group", value: "8" },
     ],
     image: "/images/studio-interior.png",
   },
 
   coaches: [
     {
-      name: "Nikhil Varma",
-      qualification: "ACSM-CPT · L2 Kettlebell",
-      specialisations: ["Strength", "Rehab"],
-      photo: "/images/athlete-portrait.png",
+      name: "Akshay Krishna Bharadwaj",
+      role: "Head of Trainers",
+      qualification:
+        "MSc Sports & Health Sciences, University of Exeter · L3 Diploma in Gym Instruction & PT, CIMSPA",
+      experience: "6+ years",
+      specialisations: [
+        "SGPT",
+        "Kettlebell workshops",
+        "Spin",
+        "Strength & conditioning",
+      ],
     },
     {
-      name: "Sneha Kulkarni",
-      qualification: "NSCA-CSCS · Pre/Post-natal",
-      specialisations: ["Conditioning", "Mobility"],
-      photo: "/images/apparel-coach.png",
+      name: "Sampath PK",
+      role: "S&C Coach",
+      qualification: "L6 Strength & Conditioning, ACE Certified",
+      experience: "1+ year",
+      specialisations: ["SGPT", "Barbell workshops", "S&C"],
     },
     {
-      name: "Rahul Menon",
-      qualification: "ACE-CPT · FMS Level 2",
-      specialisations: ["Small group", "Fat loss"],
-      photo: "/images/athlete-swing.png",
-    },
-    {
-      name: "Divya Iyer",
-      qualification: "ISSA-CPT · Kettlebell Sport",
-      specialisations: ["Technique", "Endurance"],
-      photo: "/images/athlete-press.png",
+      name: "Pavan Kumar TH",
+      role: "Personal Trainer",
+      qualification: "L6 Women's Health & Fitness · L2 Nutrition",
+      experience: "5+ years",
+      specialisations: [
+        "PT",
+        "Women's health workshops",
+        "Nutrition counseling",
+      ],
     },
   ],
 

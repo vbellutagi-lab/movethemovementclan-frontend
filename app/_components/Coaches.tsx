@@ -1,6 +1,67 @@
-import Image from "next/image";
+"use client";
+
+import { useState } from "react";
 import { client } from "../data/client";
 import { Reveal } from "./Reveal";
+
+type Coach = (typeof client.coaches)[number];
+
+function initials(name: string) {
+  const parts = name.trim().split(/\s+/);
+  return ((parts[0]?.[0] ?? "") + (parts[parts.length - 1]?.[0] ?? "")).toUpperCase();
+}
+
+function CoachCard({ coach, accent }: { coach: Coach; accent: number }) {
+  const [flipped, setFlipped] = useState(false);
+
+  function toggle() {
+    setFlipped((f) => !f);
+  }
+
+  return (
+    <div
+      className={`coachFlip${flipped ? " is-flipped" : ""}`}
+      role="button"
+      tabIndex={0}
+      aria-pressed={flipped}
+      aria-label={`${coach.name} — press for details`}
+      onClick={toggle}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          toggle();
+        }
+      }}
+    >
+      <div className="coachFlipInner">
+        <div className="coachFace front">
+          <div className={`photo avatarPlaceholder accent-${accent}`} aria-hidden="true">
+            <span className="badge">{initials(coach.name)}</span>
+          </div>
+          <div className="body">
+            <h4>{coach.name}</h4>
+            <span className="role">{coach.role}</span>
+            <span className="exp">{coach.experience} experience</span>
+            <span className="flipHint">For details →</span>
+          </div>
+        </div>
+        <div className="coachFace back">
+          <div className="body">
+            <h4>{coach.name}</h4>
+            <span className="role">{coach.role}</span>
+            <span className="q">{coach.qualification}</span>
+            <span className="exp">{coach.experience} experience</span>
+            <div className="tags">
+              {coach.specialisations.map((s) => (
+                <span key={s}>{s}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export function Coaches() {
   return (
@@ -17,20 +78,7 @@ export function Coaches() {
       <div className="mvCards4">
         {client.coaches.map((c, i) => (
           <Reveal key={c.name} delayMs={i * 90}>
-            <div className="coachCard">
-              <div className="photo">
-                <Image src={c.photo} alt={c.name} fill sizes="(min-width: 960px) 24vw, 50vw" />
-              </div>
-              <div className="body">
-                <h4>{c.name}</h4>
-                <span className="q">{c.qualification}</span>
-                <div className="tags">
-                  {c.specialisations.map((s) => (
-                    <span key={s}>{s}</span>
-                  ))}
-                </div>
-              </div>
-            </div>
+            <CoachCard coach={c} accent={i % 3} />
           </Reveal>
         ))}
       </div>

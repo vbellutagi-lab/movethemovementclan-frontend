@@ -10,6 +10,7 @@ const TILT_MAX_DEG = 8;
 export function Plans() {
   const { plans } = client;
   const [durationIdx, setDurationIdx] = useState(0);
+  const whatsappDigits = client.centre.whatsapp.replace(/[^\d]/g, "");
 
   function handleTilt(e: React.MouseEvent<HTMLDivElement>) {
     const card = e.currentTarget;
@@ -56,7 +57,6 @@ export function Plans() {
           const perMonth = Math.round(price / months);
           const fullPriceAtMonthlyRate = tier.prices[0] * months;
           const savings = fullPriceAtMonthlyRate - price;
-          const savingsPct = Math.round((savings / fullPriceAtMonthlyRate) * 100);
           const showSavings = durationIdx > 0 && savings > 0;
 
           return (
@@ -66,17 +66,19 @@ export function Plans() {
               onMouseMove={handleTilt}
               onMouseLeave={resetTilt}
             >
-              {tier.featured ? <span className="fBadge">Most popular</span> : null}
+              {tier.featured ? (
+                <span className="fBadge">Most popular</span>
+              ) : null}
               <h3>{tier.name}</h3>
               <div className="priceRow">
                 <span className="amt">{inr(price)}</span>
                 <span className="per">/ {plans.durations[durationIdx]}</span>
               </div>
-              {durationIdx > 0 ? <div className="permo">≈ {inr(perMonth)} / month</div> : null}
+              {durationIdx > 0 ? (
+                <div className="permo">≈ {inr(perMonth)} / month</div>
+              ) : null}
               {showSavings ? (
-                <div className="saveTag">
-                  Save {inr(savings)} <span className="savePct">({savingsPct}%)</span>
-                </div>
+                <div className="saveTag">Save {inr(savings)}</div>
               ) : (
                 <div className="saveTagSpacer" />
               )}
@@ -88,8 +90,15 @@ export function Plans() {
                   </li>
                 ))}
               </ul>
-              <a className="mvBtn primary block" href={`/?plan=${tier.id}#contact`}>
-                Choose plan
+              <a
+                className="mvBtn primary block"
+                href={`https://wa.me/${whatsappDigits}?text=${encodeURIComponent(
+                  `Hi! I'd like to enquire about the ${tier.name} plan (${plans.durations[durationIdx]}).`,
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Enquire now
               </a>
             </div>
           );
