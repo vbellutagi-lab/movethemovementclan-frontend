@@ -24,6 +24,17 @@
     whatsappNumber: "",
     brandName: "MOVE",
     challengeName: "Dumbbell Curl Challenge",
+
+    // Lead capture via the "Welcome to Move club" Google Form — no backend
+    // needed. Responses land in that form's linked Google Sheet.
+    googleForm: {
+      actionUrl: "https://docs.google.com/forms/d/e/1FAIpQLSeAe9zr3I7UzW3fjJQTiCKRBowEPbKGWgwpdFHm5tRRhzt86w/formResponse",
+      entryIds: {
+        name: "entry.126175417",
+        email: "entry.979369569",
+        phone: "entry.1880362741",
+      },
+    },
   };
 </script>
 
@@ -178,6 +189,7 @@
   .secondary { border: 1px solid var(--line); background: rgba(255, 255, 255, 0.05); color: var(--white); }
   .gold-outline { border: 1px solid var(--gold-line); background: rgba(224, 181, 105, 0.035); color: var(--gold-light); }
   button:disabled { opacity: 0.38; }
+  .is-locked { opacity: 0.38; pointer-events: none; cursor: not-allowed; }
 
   .secure-warning {
     display: none;
@@ -387,6 +399,15 @@
   .form-title { margin: 19px 1px 5px; color: var(--gold-light); font-family: "Zen Dots"; font-size: 9px; }
   .result .field { margin-top: 11px; }
 
+  #submitDetailsBtn { margin-top: 15px; }
+  .submit-hint {
+    margin: 8px 2px 0;
+    color: #8a837b;
+    text-align: center;
+    font-size: 9px;
+    line-height: 1.5;
+  }
+
   .location-box {
     margin-top: 11px;
     padding: 11px 12px;
@@ -398,7 +419,28 @@
     line-height: 1.5;
   }
 
-  .share-stack { display: grid; gap: 9px; margin-top: 15px; }
+  .icon-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 15px; }
+  .icon-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 64px;
+    padding: 10px 4px 8px;
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    background: rgba(255, 255, 255, 0.045);
+    color: var(--gold-light);
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .icon-btn svg { width: 20px; height: 20px; }
+  .icon-btn span { color: #ded7cf; }
+
+  .share-stack { display: grid; gap: 9px; margin-top: 9px; }
   .share-stack .primary { margin-top: 0; }
   .share-stack a { display: flex; align-items: center; justify-content: center; text-decoration: none; }
 
@@ -595,14 +637,62 @@
         <input id="personPhone" type="tel" autocomplete="tel" inputmode="tel" placeholder="Your phone number" />
       </div>
 
+      <button id="submitDetailsBtn" class="primary" type="button" disabled>SUBMIT MY DETAILS</button>
+      <p class="submit-hint">Share your details to unlock video, WhatsApp and QR sharing below.</p>
+
       <div id="locationBox" class="location-box">Location: not shared</div>
 
+      <div class="icon-actions">
+        <button id="shareVideoBtn" class="icon-btn" type="button" disabled aria-label="Share video and result">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="18" cy="5" r="2.5" />
+            <circle cx="6" cy="12" r="2.5" />
+            <circle cx="18" cy="19" r="2.5" />
+            <line x1="8.2" y1="10.6" x2="15.8" y2="6.4" />
+            <line x1="8.2" y1="13.4" x2="15.8" y2="17.6" />
+          </svg>
+          <span>Share</span>
+        </button>
+        <button id="whatsappBtn" class="icon-btn" type="button" disabled aria-label="Open ready WhatsApp message">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 12a8 8 0 1 1 3.2 6.4L4 20l1.3-3.6A7.96 7.96 0 0 1 4 12Z" />
+            <line x1="8.5" y1="11" x2="15.5" y2="11" />
+            <line x1="8.5" y1="14" x2="13" y2="14" />
+          </svg>
+          <span>WhatsApp</span>
+        </button>
+        <button id="qrBtn" class="icon-btn" type="button" disabled aria-label="Show scannable QR code">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round">
+            <rect x="3.5" y="3.5" width="6" height="6" rx="1" />
+            <rect x="14.5" y="3.5" width="6" height="6" rx="1" />
+            <rect x="3.5" y="14.5" width="6" height="6" rx="1" />
+            <rect x="14.7" y="14.7" width="2.2" height="2.2" />
+            <rect x="18.3" y="14.7" width="2.2" height="2.2" />
+            <rect x="14.7" y="18.3" width="2.2" height="2.2" />
+            <rect x="18.3" y="18.3" width="2.2" height="2.2" />
+          </svg>
+          <span>QR</span>
+        </button>
+        <button id="downloadBtn" class="icon-btn" type="button" disabled aria-label="Download video again">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3v12" />
+            <path d="M7.5 10.5 12 15l4.5-4.5" />
+            <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+          </svg>
+          <span>Download</span>
+        </button>
+      </div>
+
       <div class="share-stack">
-        <a id="visitSiteBtn" class="gold-outline" href="/">EXPLORE THE MOVE WEBSITE</a>
-        <button id="shareVideoBtn" class="primary" type="button">SHARE VIDEO + RESULT</button>
-        <button id="whatsappBtn" class="gold-outline" type="button">OPEN READY WHATSAPP MESSAGE</button>
-        <button id="qrBtn" class="secondary" type="button">SHOW SCANNABLE QR</button>
-        <button id="downloadBtn" class="secondary" type="button">DOWNLOAD VIDEO AGAIN</button>
+        <a
+          id="visitSiteBtn"
+          class="gold-outline is-locked"
+          href="#"
+          data-href="/"
+          aria-disabled="true"
+          tabindex="-1"
+          >EXPLORE THE MOVE WEBSITE</a
+        >
         <button id="newSessionBtn" class="secondary" type="button">NEW SESSION</button>
       </div>
 
@@ -693,6 +783,8 @@
   const personPhone = $("personPhone");
   const locationBox = $("locationBox");
 
+  const submitDetailsBtn = $("submitDetailsBtn");
+  const visitSiteBtn = $("visitSiteBtn");
   const shareVideoBtn = $("shareVideoBtn");
   const whatsappBtn = $("whatsappBtn");
   const qrBtn = $("qrBtn");
@@ -707,6 +799,8 @@
   let detectorBusy = false;
   let detectionTimer = null;
   let clockTimer = null;
+
+  let detailsSubmitted = false;
 
   let mediaRecorder = null;
   let recordedChunks = [];
@@ -800,6 +894,124 @@
     maxContraction = 180;
     goalCelebrated = false;
     updateHUD();
+
+    detailsSubmitted = false;
+    personName.value = "";
+    personEmail.value = "";
+    personPhone.value = "";
+    submitDetailsBtn.disabled = true;
+    submitDetailsBtn.textContent = "SUBMIT MY DETAILS";
+    updateGatedButtonsState();
+  }
+
+  // Lead-capture gate: video/WhatsApp/QR sharing stay locked until the
+  // participant has submitted their contact details.
+  function isValidDetails() {
+    const name = personName.value.trim();
+    const email = personEmail.value.trim();
+    const phone = personPhone.value.trim();
+    return name.length > 0 && /\S+@\S+\.\S+/.test(email) && phone.length >= 6;
+  }
+
+  function updateSubmitButtonState() {
+    if (detailsSubmitted) return;
+    submitDetailsBtn.disabled = !isValidDetails();
+  }
+
+  function updateGatedButtonsState() {
+    shareVideoBtn.disabled = !detailsSubmitted || !recordingFile;
+    whatsappBtn.disabled = !detailsSubmitted;
+    qrBtn.disabled = !detailsSubmitted;
+    downloadBtn.disabled = !detailsSubmitted || !recordingFile;
+
+    if (detailsSubmitted) {
+      visitSiteBtn.classList.remove("is-locked");
+      visitSiteBtn.href = visitSiteBtn.dataset.href;
+      visitSiteBtn.removeAttribute("aria-disabled");
+      visitSiteBtn.removeAttribute("tabindex");
+    } else {
+      visitSiteBtn.classList.add("is-locked");
+      visitSiteBtn.href = "#";
+      visitSiteBtn.setAttribute("aria-disabled", "true");
+      visitSiteBtn.setAttribute("tabindex", "-1");
+    }
+  }
+
+  // Submits straight to a Google Form's response endpoint via a hidden
+  // iframe — no backend, no CORS issues, response lands in the Form's sheet.
+  function submitDetailsToGoogleForm() {
+    const cfg = CONFIG.googleForm;
+
+    if (!cfg || !cfg.actionUrl) {
+      console.warn("MOVE: googleForm.actionUrl is not configured — skipping lead capture.");
+      return Promise.resolve();
+    }
+
+    return new Promise((resolve) => {
+      const iframeName = "move-lead-capture-" + Date.now();
+
+      const iframe = document.createElement("iframe");
+      iframe.name = iframeName;
+      iframe.style.display = "none";
+
+      let settled = false;
+      const finish = () => {
+        if (settled) return;
+        settled = true;
+        resolve();
+        setTimeout(() => {
+          form.remove();
+          iframe.remove();
+        }, 1000);
+      };
+
+      iframe.addEventListener("load", finish);
+      document.body.appendChild(iframe);
+
+      const form = document.createElement("form");
+      form.action = cfg.actionUrl;
+      form.method = "POST";
+      form.target = iframeName;
+      form.style.display = "none";
+
+      const fields = {
+        [cfg.entryIds.name]: personName.value.trim(),
+        [cfg.entryIds.email]: personEmail.value.trim(),
+        [cfg.entryIds.phone]: personPhone.value.trim(),
+      };
+
+      for (const [key, value] of Object.entries(fields)) {
+        if (!key) continue;
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = key;
+        input.value = value;
+        form.appendChild(input);
+      }
+
+      document.body.appendChild(form);
+      form.submit();
+
+      // Fallback in case the iframe's load event never fires.
+      setTimeout(finish, 3000);
+    });
+  }
+
+  async function handleSubmitDetails() {
+    if (!isValidDetails()) {
+      toastMessage("Please fill in your name, a valid email and phone number.");
+      return;
+    }
+
+    submitDetailsBtn.disabled = true;
+    submitDetailsBtn.textContent = "SAVING…";
+
+    await submitDetailsToGoogleForm();
+
+    detailsSubmitted = true;
+    submitDetailsBtn.textContent = "DETAILS SAVED ✓";
+    updateGatedButtonsState();
+    toastMessage("Thanks! Sharing is now unlocked.", 3200);
   }
 
   async function requestLocation() {
@@ -1251,7 +1463,7 @@
       locationBox.textContent = "Location: not shared / unavailable";
     }
 
-    shareVideoBtn.disabled = !recordingFile;
+    updateGatedButtonsState();
 
     stageView.style.display = "none";
     resultView.style.display = "block";
@@ -1479,6 +1691,7 @@
     hardRestartApp();
   });
 
+  submitDetailsBtn.addEventListener("click", handleSubmitDetails);
   shareVideoBtn.addEventListener("click", shareVideo);
   whatsappBtn.addEventListener("click", () => window.open(whatsappURL(), "_blank", "noopener"));
   qrBtn.addEventListener("click", createQR);
@@ -1489,8 +1702,10 @@
 
   newSessionBtn.addEventListener("click", newSession);
 
-  // Regenerate the QR if participant details change after it's already shown.
+  // Live-validate as the participant types, and regenerate the QR if their
+  // details change after it's already been shown.
   [personName, personEmail, personPhone].forEach((field) => {
+    field.addEventListener("input", updateSubmitButtonState);
     field.addEventListener("change", () => {
       if (qrPanel.classList.contains("show")) createQR();
     });

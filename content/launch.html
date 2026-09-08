@@ -184,9 +184,9 @@
     </div>
 
     <script>
-      // Gym launch / event start — keep in sync with the countdown on the
-      // main site's /play route if that ever changes.
-      const LAUNCH_AT = new Date("2026-09-09T18:00:00+05:30").getTime();
+      // Injected by app/launch/route.ts from app/_lib/launch.ts — the single
+      // source of truth for the launch time, shared with /, /play and /game.html.
+      const LAUNCH_AT = __LAUNCH_AT_MS__;
 
       // TODO: point this at wherever the MOVE game (movethemovementclan-frontend's
       // /play route) actually ends up deployed. Assumes the root domain gets cut
