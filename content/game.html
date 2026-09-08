@@ -1,0 +1,1519 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
+<meta name="theme-color" content="#080706" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<title>MOVE — Dumbbell Challenge</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Zen+Dots&display=swap"
+  rel="stylesheet"
+/>
+
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection@2.1.3/dist/pose-detection.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+
+<script>
+  window.MOVE_CONFIG = {
+    whatsappNumber: "",
+    brandName: "MOVE",
+    challengeName: "Dumbbell Curl Challenge",
+  };
+</script>
+
+<style>
+  :root {
+    --bg: #080706;
+    --bg-soft: #110e0c;
+    --gold: #e0b569;
+    --gold-dark: #c6a96e;
+    --gold-light: #f0cf87;
+    --white: #efefef;
+    --muted: #9f9992;
+    --green: #8dd7a7;
+    --red: #ef7c72;
+    --line: rgba(239, 239, 239, 0.11);
+    --gold-line: rgba(224, 181, 105, 0.28);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    min-height: 100%;
+    background: var(--bg);
+    color: var(--white);
+    font-family: "Montserrat", system-ui, sans-serif;
+  }
+
+  body { min-height: 100svh; overflow-x: hidden; }
+
+  button, input, select { font: inherit; }
+  button { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  button:focus-visible, input:focus-visible, select:focus-visible {
+    outline: 2px solid var(--gold-light);
+    outline-offset: 2px;
+  }
+
+  /* Ambient background */
+  .ambient {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+    background:
+      radial-gradient(circle at 50% -20%, rgba(224, 181, 105, 0.1), transparent 42%),
+      linear-gradient(180deg, #0d0a08, #050403);
+  }
+  .ambient::before, .ambient::after {
+    content: "";
+    position: absolute;
+    width: 56vmax;
+    height: 56vmax;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.18;
+    background: radial-gradient(circle, rgba(240, 207, 135, 0.95) 0%, rgba(198, 169, 110, 0.38) 29%, transparent 68%);
+    will-change: transform;
+  }
+  .ambient::before { left: -34vmax; top: -20vmax; animation: moveGlowA 16s ease-in-out infinite alternate; }
+  .ambient::after { right: -39vmax; bottom: -25vmax; animation: moveGlowB 20s ease-in-out infinite alternate; }
+
+  @keyframes moveGlowA {
+    0% { transform: translate3d(0, 0, 0) scale(0.82); }
+    42% { transform: translate3d(75vw, 18vh, 0) scale(1.12); }
+    100% { transform: translate3d(27vw, 78vh, 0) scale(0.9); }
+  }
+  @keyframes moveGlowB {
+    0% { transform: scale(1); }
+    55% { transform: translate3d(-65vw, -55vh, 0) scale(0.78); }
+    100% { transform: translate3d(-20vw, -12vh, 0) scale(1.15); }
+  }
+
+  .app {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 560px;
+    min-height: 100svh;
+    margin: 0 auto;
+    padding: calc(10px + env(safe-area-inset-top)) 14px calc(24px + env(safe-area-inset-bottom));
+  }
+
+  .topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 2px 14px; }
+  .logo { font-family: "Zen Dots", sans-serif; font-size: 25px; line-height: 1; letter-spacing: 0.14em; }
+  .logo .o { color: var(--gold); }
+  .kicker { margin-top: 7px; font-size: 8px; font-weight: 700; letter-spacing: 0.22em; color: var(--muted); text-transform: uppercase; }
+
+  .hard-reset {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+    border: 1px solid rgba(239, 124, 114, 0.25);
+    background: rgba(255, 255, 255, 0.035);
+    color: #efaaa4;
+    font-size: 18px;
+    font-weight: 900;
+  }
+
+  .glass {
+    background: linear-gradient(180deg, rgba(28, 22, 18, 0.78), rgba(13, 11, 9, 0.82));
+    border: 1px solid var(--line);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025), 0 24px 80px rgba(0, 0, 0, 0.46);
+    backdrop-filter: blur(18px);
+  }
+
+  /* Setup */
+  .hero { position: relative; overflow: hidden; border-radius: 27px; padding: 25px 18px 19px; }
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: -30% 35% 38% -28%;
+    background: radial-gradient(circle, rgba(224, 181, 105, 0.18), transparent 66%);
+    filter: blur(18px);
+  }
+  .eyebrow { position: relative; color: var(--gold); font-family: "Zen Dots"; font-size: 9px; letter-spacing: 0.12em; }
+  .hero h1 { position: relative; margin: 13px 0 10px; font-family: "Zen Dots"; font-size: clamp(33px, 9vw, 52px); line-height: 1.05; }
+  .hero h1 span { color: var(--gold-light); }
+  .hero-description { position: relative; margin: 0; max-width: 430px; color: #bbb4ad; font-size: 13px; line-height: 1.55; }
+
+  .setup-grid { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 21px; }
+  .field label { display: block; margin: 0 0 7px; color: var(--muted); font-size: 8px; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase; }
+  .field input, .field select {
+    width: 100%;
+    min-height: 50px;
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    background: rgba(0, 0, 0, 0.3);
+    color: var(--white);
+    padding: 0 12px;
+    font-size: 16px;
+  }
+
+  .consent { position: relative; display: flex; align-items: flex-start; gap: 10px; margin: 14px 1px 2px; color: #aaa39b; font-size: 10px; line-height: 1.5; }
+  .consent input { flex: 0 0 auto; width: 19px; height: 19px; margin-top: 1px; accent-color: var(--gold); }
+
+  /* Buttons */
+  .primary, .secondary, .gold-outline {
+    width: 100%;
+    min-height: 56px;
+    border-radius: 16px;
+    font-weight: 900;
+    letter-spacing: 0.045em;
+  }
+  .primary {
+    border: 0;
+    margin-top: 15px;
+    color: #15110d;
+    background: linear-gradient(135deg, var(--gold-light), var(--gold) 52%, var(--gold-dark));
+    box-shadow: 0 11px 30px rgba(224, 181, 105, 0.14), inset 0 1px rgba(255, 255, 255, 0.4);
+  }
+  .secondary { border: 1px solid var(--line); background: rgba(255, 255, 255, 0.05); color: var(--white); }
+  .gold-outline { border: 1px solid var(--gold-line); background: rgba(224, 181, 105, 0.035); color: var(--gold-light); }
+  button:disabled { opacity: 0.38; }
+
+  .secure-warning {
+    display: none;
+    position: relative;
+    margin-top: 13px;
+    padding: 12px 13px;
+    border-radius: 14px;
+    background: rgba(239, 124, 114, 0.08);
+    border: 1px solid rgba(239, 124, 114, 0.26);
+    color: #f0a19a;
+    font-size: 11px;
+    line-height: 1.5;
+  }
+
+  /* Live camera */
+  .stage { display: none; }
+  .camera-shell {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    min-height: 420px;
+    border-radius: 28px;
+    border: 1px solid var(--gold-line);
+    background: #050403;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55);
+  }
+  .camera-shell video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background: #050403;
+    transform: scaleX(-1);
+  }
+  .camera-shell.rear video { transform: none; }
+  .camera-vignette {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.48), transparent 25%, transparent 64%, rgba(0, 0, 0, 0.8));
+    box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.52);
+  }
+
+  .stage-status { position: absolute; z-index: 4; left: 12px; right: 12px; top: 12px; display: flex; justify-content: space-between; gap: 8px; }
+  .badge {
+    padding: 8px 10px;
+    border-radius: 999px;
+    background: rgba(7, 6, 5, 0.68);
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    backdrop-filter: blur(10px);
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .badge.live { color: var(--green); }
+  .badge.wait { color: var(--gold-light); }
+  .badge.bad { color: var(--red); }
+  .record-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    margin-right: 6px;
+    border-radius: 50%;
+    background: #ef7167;
+    box-shadow: 0 0 0 4px rgba(239, 113, 103, 0.12);
+  }
+
+  /* Live scoreboard */
+  .hud {
+    position: absolute;
+    z-index: 4;
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    padding: 14px;
+    border-radius: 21px;
+    background: rgba(9, 7, 6, 0.64);
+    border: 1px solid rgba(255, 255, 255, 0.11);
+    backdrop-filter: blur(15px);
+  }
+  .hud-row { display: grid; grid-template-columns: 1fr 1fr 1fr; }
+  .hud-stat { min-width: 0; text-align: center; border-right: 1px solid rgba(255, 255, 255, 0.08); }
+  .hud-stat:last-child { border-right: 0; }
+  .hud-stat b {
+    display: block;
+    color: var(--gold-light);
+    font-size: clamp(25px, 7vw, 35px);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .hud-stat span { display: block; margin-top: 6px; color: #aaa39b; font-size: 7px; font-weight: 900; letter-spacing: 0.15em; }
+
+  .score-subline { display: flex; justify-content: center; align-items: center; gap: 11px; margin-top: 10px; color: #b6afa7; font-size: 9px; font-weight: 800; letter-spacing: 0.1em; }
+  .score-subline b { color: var(--gold-light); }
+
+  .progress-head { display: flex; justify-content: space-between; margin: 11px 1px 6px; color: #aaa39b; font-size: 8px; font-weight: 900; letter-spacing: 0.13em; }
+  .track { height: 8px; overflow: hidden; border-radius: 999px; background: rgba(255, 255, 255, 0.09); }
+  .bar {
+    width: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--gold-dark), var(--gold-light));
+    box-shadow: 0 0 20px rgba(224, 181, 105, 0.55);
+    transition: width 0.25s ease;
+  }
+
+  .coach { min-height: 41px; padding: 11px 2px 0; text-align: center; color: #e2dbd3; font-size: 11px; line-height: 1.5; }
+
+  .controls { display: grid; grid-template-columns: 0.72fr 1.28fr; gap: 9px; margin-top: 11px; }
+  .control {
+    min-height: 52px;
+    border-radius: 15px;
+    border: 1px solid var(--line);
+    background: rgba(255, 255, 255, 0.045);
+    color: #ded7cf;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 0.07em;
+  }
+  .control.stop { border: 0; color: #15110e; background: linear-gradient(135deg, var(--gold-light), var(--gold-dark)); }
+
+  /* Countdown */
+  .countdown {
+    display: none;
+    position: fixed;
+    z-index: 50;
+    inset: 0;
+    align-items: center;
+    justify-content: center;
+    background: rgba(6, 5, 4, 0.84);
+    backdrop-filter: blur(12px);
+  }
+  .countdown.show { display: flex; }
+  .countdown-number {
+    color: var(--gold-light);
+    font-family: "Zen Dots";
+    font-size: clamp(88px, 28vw, 160px);
+    text-shadow: 0 0 70px rgba(224, 181, 105, 0.32);
+    animation: countdownPop 0.72s ease both;
+  }
+  @keyframes countdownPop {
+    0% { opacity: 0; transform: scale(0.55); }
+    45% { opacity: 1; transform: scale(1.12); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+
+  /* Goal celebration */
+  .celebration {
+    display: none;
+    position: fixed;
+    z-index: 70;
+    inset: 0;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    pointer-events: none;
+    background: radial-gradient(circle at center, rgba(224, 181, 105, 0.18), rgba(0, 0, 0, 0.73) 47%, rgba(0, 0, 0, 0.87));
+  }
+  .celebration.show { display: flex; }
+  #confetti { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .celebrate-logo { position: relative; z-index: 2; text-align: center; animation: logoBlast 1.15s cubic-bezier(0.12, 0.82, 0.18, 1) both; }
+  .celebrate-logo .big {
+    font-family: "Zen Dots";
+    font-size: clamp(58px, 19vw, 110px);
+    letter-spacing: 0.12em;
+    text-indent: 0.12em;
+    text-shadow: 0 0 60px rgba(224, 181, 105, 0.36);
+  }
+  .celebrate-logo .o { color: var(--gold-light); }
+  .celebrate-line { margin-top: 12px; color: var(--gold-light); font-size: 9px; font-weight: 900; letter-spacing: 0.25em; }
+  @keyframes logoBlast {
+    0% { opacity: 0; transform: scale(0.12) rotate(-9deg); filter: blur(10px); }
+    43% { opacity: 1; transform: scale(1.17) rotate(1deg); filter: blur(0); }
+    72% { transform: scale(0.96); }
+    100% { transform: scale(1); }
+  }
+
+  /* Results */
+  .result { display: none; }
+  .result-card { border-radius: 27px; padding: 19px 16px 18px; }
+  .result-heading { text-align: center; padding: 7px 0 14px; }
+  .result-logo { font-family: "Zen Dots"; font-size: 17px; letter-spacing: 0.15em; }
+  .result-logo .o { color: var(--gold); }
+  .result-heading h2 { margin: 12px 0 5px; font-family: "Zen Dots"; font-size: 27px; }
+  .result-heading p { margin: 0; color: var(--muted); font-size: 11px; }
+
+  .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+  .result-stat { padding: 13px; border-radius: 15px; background: rgba(255, 255, 255, 0.035); border: 1px solid var(--line); }
+  .result-stat b { display: block; color: var(--gold-light); font-size: 21px; }
+  .result-stat span { display: block; margin-top: 4px; color: var(--muted); font-size: 7px; font-weight: 900; letter-spacing: 0.13em; }
+
+  .filename {
+    margin-top: 11px;
+    padding: 11px;
+    border-radius: 13px;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--line);
+    color: #aaa39b;
+    font-size: 9px;
+    line-height: 1.45;
+    word-break: break-all;
+  }
+
+  .form-title { margin: 19px 1px 5px; color: var(--gold-light); font-family: "Zen Dots"; font-size: 9px; }
+  .result .field { margin-top: 11px; }
+
+  .location-box {
+    margin-top: 11px;
+    padding: 11px 12px;
+    border-radius: 13px;
+    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid var(--line);
+    color: #aaa39b;
+    font-size: 10px;
+    line-height: 1.5;
+  }
+
+  .share-stack { display: grid; gap: 9px; margin-top: 15px; }
+  .share-stack .primary { margin-top: 0; }
+  .share-stack a { display: flex; align-items: center; justify-content: center; text-decoration: none; }
+
+  .qr-panel { display: none; margin-top: 13px; padding: 15px; border-radius: 18px; background: #f3eee4; color: #18130f; text-align: center; }
+  .qr-panel.show { display: block; }
+  .qr-panel h3 { margin: 0 0 5px; font-size: 15px; }
+  .qr-panel p { margin: 0 0 12px; color: #5f574e; font-size: 10px; line-height: 1.45; }
+  #qrCode { display: flex; justify-content: center; align-items: center; min-height: 208px; }
+  #qrCode img, #qrCode canvas { max-width: 208px; height: auto !important; }
+
+  .microcopy { margin: 11px 2px 0; color: #7e7872; text-align: center; font-size: 8px; line-height: 1.5; }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    z-index: 90;
+    left: 50%;
+    bottom: calc(18px + env(safe-area-inset-bottom));
+    transform: translate(-50%, 18px);
+    max-width: calc(100vw - 30px);
+    padding: 11px 14px;
+    border-radius: 14px;
+    background: #191511;
+    border: 1px solid var(--gold-line);
+    color: #eee6da;
+    box-shadow: 0 18px 55px rgba(0, 0, 0, 0.5);
+    font-size: 10px;
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.22s ease;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  @media (max-width: 360px) {
+    .setup-grid, .result-grid { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ambient::before, .ambient::after, .celebrate-logo, .countdown-number { animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="ambient" aria-hidden="true"></div>
+
+<main class="app">
+
+  <header class="topbar">
+    <div>
+      <div class="logo">M<span class="o">O</span>VE</div>
+      <div class="kicker">THE MOVEMENT CLAN · LIVE CHALLENGE</div>
+    </div>
+    <button id="hardReset" class="hard-reset" type="button" title="Hard restart" aria-label="Hard restart">↻</button>
+  </header>
+
+  <!-- SETUP -->
+  <section id="setupView" class="hero glass">
+    <div class="eyebrow">MOVE / DUMBBELL TRIAL</div>
+    <h1>MAKE<br /><span>THE MOVE.</span></h1>
+    <p class="hero-description">
+      Your camera watches the movement invisibly and counts clean dumbbell curls.
+      No tracking skeleton. No clutter. Just the athlete and the score.
+    </p>
+
+    <div class="setup-grid">
+      <div class="field">
+        <label for="targetReps">TARGET</label>
+        <select id="targetReps">
+          <option value="8">8 reps</option>
+          <option value="10" selected>10 reps</option>
+          <option value="12">12 reps</option>
+          <option value="15">15 reps</option>
+          <option value="20">20 reps</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="weightKg">DUMBBELL</label>
+        <select id="weightKg">
+          <option value="5">5 kg</option>
+          <option value="7.5">7.5 kg</option>
+          <option value="10" selected>10 kg</option>
+          <option value="12.5">12.5 kg</option>
+          <option value="15">15 kg</option>
+          <option value="20">20 kg</option>
+          <option value="25">25 kg</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="armSide">TRACK ARM</label>
+        <select id="armSide">
+          <option value="right" selected>Right</option>
+          <option value="left">Left</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="cameraFacing">CAMERA</label>
+        <select id="cameraFacing">
+          <option value="user" selected>Front</option>
+          <option value="environment">Rear</option>
+        </select>
+      </div>
+    </div>
+
+    <label class="consent">
+      <input id="locationConsent" type="checkbox" checked />
+      <span>
+        Include my current location in the final MOVE result.
+        Your browser will ask permission. You can deny it and still play.
+      </span>
+    </label>
+
+    <div id="secureWarning" class="secure-warning"></div>
+
+    <button id="startBtn" class="primary" type="button">START MOVE</button>
+  </section>
+
+  <!-- CAMERA / GAME -->
+  <section id="stageView" class="stage">
+    <div id="cameraShell" class="camera-shell">
+      <video id="cameraVideo" playsinline muted></video>
+      <div class="camera-vignette"></div>
+
+      <div class="stage-status">
+        <div id="recordBadge" class="badge wait">PREPARING</div>
+        <div id="poseBadge" class="badge wait">POSE LOADING</div>
+      </div>
+
+      <div class="hud">
+        <div class="hud-row">
+          <div class="hud-stat"><b id="hudReps">0</b><span>REPS</span></div>
+          <div class="hud-stat"><b id="hudScore">0</b><span>SCORE</span></div>
+          <div class="hud-stat"><b id="hudTime">00:00</b><span>TIME</span></div>
+        </div>
+
+        <div class="score-subline">
+          <span>COMBO <b id="comboDisplay">1×</b></span>
+          <span>VOLUME <b id="volumeDisplay">0 KG</b></span>
+        </div>
+
+        <div class="progress-head">
+          <span>MOVE ENERGY</span>
+          <span id="goalLabel">0 / 10</span>
+        </div>
+
+        <div class="track"><div id="goalBar" class="bar"></div></div>
+
+        <div id="coachText" class="coach" aria-live="polite">
+          Stand back and keep your working arm visible.
+        </div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="manualRepBtn" class="control" type="button">+ MANUAL</button>
+      <button id="stopBtn" class="control stop" type="button">STOP + SAVE</button>
+    </div>
+  </section>
+
+  <!-- RESULT -->
+  <section id="resultView" class="result">
+    <div class="result-card glass">
+      <div class="result-heading">
+        <div class="result-logo">M<span class="o">O</span>VE</div>
+        <h2>SESSION SAVED.</h2>
+        <p>Future starts by just a move.</p>
+      </div>
+
+      <div class="result-grid">
+        <div class="result-stat"><b id="resultReps">0</b><span>TOTAL REPS</span></div>
+        <div class="result-stat"><b id="resultScore">0</b><span>SCORE</span></div>
+        <div class="result-stat"><b id="resultVolume">0 kg</b><span>VOLUME</span></div>
+        <div class="result-stat"><b id="resultDuration">00:00</b><span>DURATION</span></div>
+      </div>
+
+      <div id="filenameBox" class="filename"></div>
+
+      <div class="form-title">CLAIM YOUR MOVE</div>
+
+      <div class="field">
+        <label for="personName">NAME</label>
+        <input id="personName" autocomplete="name" placeholder="Your name" />
+      </div>
+
+      <div class="field">
+        <label for="personEmail">EMAIL</label>
+        <input id="personEmail" type="email" autocomplete="email" placeholder="you@example.com" />
+      </div>
+
+      <div class="field">
+        <label for="personPhone">MOBILE / WHATSAPP</label>
+        <input id="personPhone" type="tel" autocomplete="tel" inputmode="tel" placeholder="Your phone number" />
+      </div>
+
+      <div id="locationBox" class="location-box">Location: not shared</div>
+
+      <div class="share-stack">
+        <a id="visitSiteBtn" class="gold-outline" href="/">EXPLORE THE MOVE WEBSITE</a>
+        <button id="shareVideoBtn" class="primary" type="button">SHARE VIDEO + RESULT</button>
+        <button id="whatsappBtn" class="gold-outline" type="button">OPEN READY WHATSAPP MESSAGE</button>
+        <button id="qrBtn" class="secondary" type="button">SHOW SCANNABLE QR</button>
+        <button id="downloadBtn" class="secondary" type="button">DOWNLOAD VIDEO AGAIN</button>
+        <button id="newSessionBtn" class="secondary" type="button">NEW SESSION</button>
+      </div>
+
+      <div id="qrPanel" class="qr-panel">
+        <h3>Scan to send MOVE result</h3>
+        <p>
+          The message already contains the participant details, score, workout data,
+          timestamps and recording filename.
+        </p>
+        <div id="qrCode"></div>
+      </div>
+
+      <div class="microcopy">
+        Video remains on this device unless the participant chooses to share it.
+        This prototype has no cloud backend.
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- COUNTDOWN -->
+<div id="countdown" class="countdown" aria-live="assertive">
+  <div id="countdownNumber" class="countdown-number">3</div>
+</div>
+
+<!-- CELEBRATION -->
+<div id="celebration" class="celebration">
+  <canvas id="confetti"></canvas>
+  <div class="celebrate-logo">
+    <div class="big">M<span class="o">O</span>VE</div>
+    <div class="celebrate-line">GOAL HIT · KEEP MOVING</div>
+  </div>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  "use strict";
+
+  const CONFIG = window.MOVE_CONFIG;
+  const $ = (id) => document.getElementById(id);
+
+  const setupView = $("setupView");
+  const stageView = $("stageView");
+  const resultView = $("resultView");
+  const startBtn = $("startBtn");
+  const hardReset = $("hardReset");
+  const secureWarning = $("secureWarning");
+  const targetInput = $("targetReps");
+  const weightInput = $("weightKg");
+  const armInput = $("armSide");
+  const facingInput = $("cameraFacing");
+  const locationConsent = $("locationConsent");
+
+  const cameraShell = $("cameraShell");
+  const video = $("cameraVideo");
+  const recordBadge = $("recordBadge");
+  const poseBadge = $("poseBadge");
+  const coach = $("coachText");
+
+  const hudReps = $("hudReps");
+  const hudScore = $("hudScore");
+  const hudTime = $("hudTime");
+  const comboDisplay = $("comboDisplay");
+  const volumeDisplay = $("volumeDisplay");
+  const goalLabel = $("goalLabel");
+  const goalBar = $("goalBar");
+
+  const stopBtn = $("stopBtn");
+  const manualRepBtn = $("manualRepBtn");
+
+  const countdown = $("countdown");
+  const countdownNumber = $("countdownNumber");
+
+  const celebration = $("celebration");
+  const confettiCanvas = $("confetti");
+
+  const toast = $("toast");
+
+  const resultReps = $("resultReps");
+  const resultScore = $("resultScore");
+  const resultVolume = $("resultVolume");
+  const resultDuration = $("resultDuration");
+  const filenameBox = $("filenameBox");
+  const personName = $("personName");
+  const personEmail = $("personEmail");
+  const personPhone = $("personPhone");
+  const locationBox = $("locationBox");
+
+  const shareVideoBtn = $("shareVideoBtn");
+  const whatsappBtn = $("whatsappBtn");
+  const qrBtn = $("qrBtn");
+  const downloadBtn = $("downloadBtn");
+  const newSessionBtn = $("newSessionBtn");
+  const qrPanel = $("qrPanel");
+  const qrCode = $("qrCode");
+
+  // State
+  let stream = null;
+  let detector = null;
+  let detectorBusy = false;
+  let detectionTimer = null;
+  let clockTimer = null;
+
+  let mediaRecorder = null;
+  let recordedChunks = [];
+  let recordingBlob = null;
+  let recordingFile = null;
+  let recordingURL = null;
+
+  let sessionActive = false;
+  let startTime = null;
+  let endTime = null;
+  let locationData = null;
+
+  let target = 10;
+  let weight = 10;
+  let side = "right";
+  let facing = "user";
+
+  // Rep engine
+  let reps = 0;
+  let score = 0;
+  let combo = 0;
+  let bestCombo = 0;
+  let lastRepTime = 0;
+  let smoothedAngle = null;
+  let armReady = false;
+  let extendedFrames = 0;
+  let curledFrames = 0;
+  let maxExtension = 0;
+  let maxContraction = 180;
+  let goalCelebrated = false;
+
+  function toastMessage(message, milliseconds = 2600) {
+    toast.textContent = message;
+    toast.classList.add("show");
+    clearTimeout(toastMessage.timer);
+    toastMessage.timer = setTimeout(() => toast.classList.remove("show"), milliseconds);
+  }
+
+  function badge(element, text, state = "wait") {
+    element.className = "badge " + state;
+    if (element === recordBadge && state === "live") {
+      element.innerHTML = '<span class="record-dot"></span>' + text;
+    } else {
+      element.textContent = text;
+    }
+  }
+
+  function sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  function formatDuration(ms) {
+    const total = Math.max(0, Math.floor(ms / 1000));
+    const minutes = Math.floor(total / 60);
+    const seconds = total % 60;
+    return String(minutes).padStart(2, "0") + ":" + String(seconds).padStart(2, "0");
+  }
+
+  function filenameTimestamp(date) {
+    const pad = (value) => String(value).padStart(2, "0");
+    return (
+      date.getFullYear() +
+      "-" + pad(date.getMonth() + 1) +
+      "-" + pad(date.getDate()) +
+      "_" + pad(date.getHours()) +
+      "-" + pad(date.getMinutes()) +
+      "-" + pad(date.getSeconds())
+    );
+  }
+
+  function updateHUD() {
+    hudReps.textContent = reps;
+    hudScore.textContent = score;
+    comboDisplay.textContent = Math.max(1, combo) + "×";
+    volumeDisplay.textContent = (reps * weight).toLocaleString(undefined, { maximumFractionDigits: 1 }) + " KG";
+    goalLabel.textContent = reps + " / " + target;
+    goalBar.style.width = Math.min(100, (reps / target) * 100) + "%";
+  }
+
+  function resetWorkoutEngine() {
+    reps = 0;
+    score = 0;
+    combo = 0;
+    bestCombo = 0;
+    lastRepTime = 0;
+    smoothedAngle = null;
+    armReady = false;
+    extendedFrames = 0;
+    curledFrames = 0;
+    maxExtension = 0;
+    maxContraction = 180;
+    goalCelebrated = false;
+    updateHUD();
+  }
+
+  async function requestLocation() {
+    locationData = null;
+    if (!locationConsent.checked) return;
+    if (!navigator.geolocation) return;
+
+    return new Promise((resolve) => {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          locationData = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+            accuracy: position.coords.accuracy,
+            capturedAt: new Date().toISOString(),
+          };
+          resolve();
+        },
+        () => resolve(),
+        { enableHighAccuracy: false, timeout: 7000, maximumAge: 300000 }
+      );
+    });
+  }
+
+  async function openCamera() {
+    if (!window.isSecureContext) {
+      throw new Error("Camera needs HTTPS. Upload this HTML file and open the https:// address.");
+    }
+    if (!navigator.mediaDevices?.getUserMedia) {
+      throw new Error("Camera access is unavailable in this browser.");
+    }
+
+    stopCameraTracks();
+    facing = facingInput.value;
+
+    stream = await navigator.mediaDevices.getUserMedia({
+      audio: false,
+      video: {
+        facingMode: { ideal: facing },
+        width: { ideal: 720 },
+        height: { ideal: 1280 },
+        frameRate: { ideal: 30, max: 30 },
+      },
+    });
+
+    video.srcObject = stream;
+    await video.play();
+    cameraShell.classList.toggle("rear", facing === "environment");
+  }
+
+  function stopCameraTracks() {
+    if (stream) {
+      stream.getTracks().forEach((track) => track.stop());
+      stream = null;
+    }
+    video.srcObject = null;
+  }
+
+  async function loadPoseDetector() {
+    if (detector) return detector;
+    if (!window.tf || !window.poseDetection) {
+      throw new Error("The pose engine failed to load. Check internet access and restart.");
+    }
+
+    badge(poseBadge, "LOADING AI", "wait");
+    await tf.ready();
+
+    detector = await poseDetection.createDetector(poseDetection.SupportedModels.MoveNet, {
+      modelType: poseDetection.movenet.modelType.SINGLEPOSE_LIGHTNING,
+      enableSmoothing: true,
+    });
+
+    badge(poseBadge, "AI READY", "live");
+    return detector;
+  }
+
+  function findPoint(pose, name) {
+    return pose.keypoints.find((point) => point.name === name);
+  }
+
+  function pointGood(point) {
+    return point && (point.score == null || point.score >= 0.35);
+  }
+
+  function calculateElbowAngle(shoulder, elbow, wrist) {
+    const ax = shoulder.x - elbow.x;
+    const ay = shoulder.y - elbow.y;
+    const bx = wrist.x - elbow.x;
+    const by = wrist.y - elbow.y;
+
+    const magnitudeA = Math.hypot(ax, ay);
+    const magnitudeB = Math.hypot(bx, by);
+    if (!magnitudeA || !magnitudeB) return null;
+
+    let cosine = (ax * bx + ay * by) / (magnitudeA * magnitudeB);
+    cosine = Math.max(-1, Math.min(1, cosine));
+    return (Math.acos(cosine) * 180) / Math.PI;
+  }
+
+  function countRep() {
+    const now = performance.now();
+    const secondsSinceLast = lastRepTime ? (now - lastRepTime) / 1000 : 2.4;
+
+    // Noise protection: physically impossible duplicate reps inside ~650ms are ignored.
+    if (lastRepTime && secondsSinceLast < 0.65) return;
+
+    const movementRange = Math.max(0, maxExtension - maxContraction);
+    const rangeBonus = movementRange >= 95 ? 30 : movementRange >= 75 ? 15 : 0;
+    const tempoBonus = secondsSinceLast >= 1 && secondsSinceLast <= 4.5 ? 20 : 0;
+
+    if (lastRepTime && secondsSinceLast <= 5.5) {
+      combo++;
+    } else {
+      combo = 1;
+    }
+    bestCombo = Math.max(bestCombo, combo);
+
+    const comboBonus = Math.min(50, Math.max(0, combo - 1) * 5);
+
+    reps++;
+    score += 100 + rangeBonus + tempoBonus + comboBonus;
+    lastRepTime = now;
+    maxExtension = 0;
+    maxContraction = 180;
+
+    updateHUD();
+
+    if (navigator.vibrate) navigator.vibrate(35);
+
+    if (combo >= 4) {
+      coach.textContent = "MOMENTUM " + combo + "× · CONTROL THE RETURN.";
+    } else {
+      coach.textContent = "REP LOCKED · EXTEND FOR THE NEXT ONE.";
+    }
+
+    if (reps >= target && !goalCelebrated) {
+      goalCelebrated = true;
+      celebrateGoal();
+    }
+  }
+
+  // Extended: ~148deg+. Contracted: ~72deg-. Multiple consecutive frames must
+  // agree before a state change, to avoid single-frame pose noise.
+  function processAngle(rawAngle) {
+    smoothedAngle = smoothedAngle == null ? rawAngle : smoothedAngle * 0.68 + rawAngle * 0.32;
+
+    const angle = smoothedAngle;
+    maxExtension = Math.max(maxExtension, angle);
+    maxContraction = Math.min(maxContraction, angle);
+
+    if (angle >= 148) {
+      extendedFrames++;
+      curledFrames = 0;
+      if (extendedFrames >= 3) {
+        armReady = true;
+        coach.textContent = "READY · CURL WITH CONTROL.";
+      }
+    } else if (angle <= 72) {
+      curledFrames++;
+      extendedFrames = 0;
+      if (armReady && curledFrames >= 2) {
+        armReady = false;
+        curledFrames = 0;
+        countRep();
+      }
+    } else {
+      extendedFrames = Math.max(0, extendedFrames - 1);
+      curledFrames = Math.max(0, curledFrames - 1);
+    }
+  }
+
+  async function detectMovement() {
+    if (!sessionActive || !detector || detectorBusy || video.readyState < 2) return;
+
+    detectorBusy = true;
+    try {
+      const poses = await detector.estimatePoses(video, { maxPoses: 1, flipHorizontal: false });
+      const pose = poses?.[0];
+
+      if (!pose) {
+        badge(poseBadge, "STEP INTO FRAME", "wait");
+        coach.textContent = "STEP BACK UNTIL YOUR WORKING ARM IS VISIBLE.";
+        return;
+      }
+
+      const shoulder = findPoint(pose, side + "_shoulder");
+      const elbow = findPoint(pose, side + "_elbow");
+      const wrist = findPoint(pose, side + "_wrist");
+
+      if (!pointGood(shoulder) || !pointGood(elbow) || !pointGood(wrist)) {
+        badge(poseBadge, "SHOW " + side.toUpperCase() + " ARM", "wait");
+        coach.textContent = "KEEP YOUR FULL " + side.toUpperCase() + " ARM VISIBLE.";
+        return;
+      }
+
+      badge(poseBadge, "BODY LOCKED", "live");
+
+      const angle = calculateElbowAngle(shoulder, elbow, wrist);
+      if (angle != null) processAngle(angle);
+    } catch (error) {
+      console.warn("MOVE tracking:", error);
+      badge(poseBadge, "RETRYING AI", "bad");
+    } finally {
+      detectorBusy = false;
+    }
+  }
+
+  // ~8-9 FPS: the phone is simultaneously previewing, recording, running pose
+  // inference and rendering UI — a lower inference rate is far more reliable.
+  function startDetectionLoop() {
+    clearInterval(detectionTimer);
+    detectionTimer = setInterval(detectMovement, 115);
+  }
+
+  function stopDetectionLoop() {
+    clearInterval(detectionTimer);
+    detectionTimer = null;
+    detectorBusy = false;
+  }
+
+  function startClock() {
+    clearInterval(clockTimer);
+    function render() {
+      if (!startTime) return;
+      const end = endTime || new Date();
+      hudTime.textContent = formatDuration(end - startTime);
+    }
+    render();
+    clockTimer = setInterval(render, 250);
+  }
+
+  function stopClock() {
+    clearInterval(clockTimer);
+    clockTimer = null;
+  }
+
+  function bestRecordingMime() {
+    if (!window.MediaRecorder) return "";
+    const types = ["video/webm;codecs=vp9", "video/webm;codecs=vp8", "video/webm", "video/mp4"];
+    for (const type of types) {
+      if (!MediaRecorder.isTypeSupported || MediaRecorder.isTypeSupported(type)) return type;
+    }
+    return "";
+  }
+
+  function recordingExtension(mime) {
+    return /mp4/i.test(mime) ? "mp4" : "webm";
+  }
+
+  function startVideoRecording() {
+    recordedChunks = [];
+    recordingBlob = null;
+    recordingFile = null;
+
+    if (!window.MediaRecorder || !stream) {
+      badge(recordBadge, "NO RECORDER", "bad");
+      toastMessage("This browser can track the exercise but cannot record video.", 4200);
+      return false;
+    }
+
+    const mime = bestRecordingMime();
+    try {
+      mediaRecorder = mime
+        ? new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 3500000 })
+        : new MediaRecorder(stream);
+    } catch (error) {
+      mediaRecorder = new MediaRecorder(stream);
+    }
+
+    mediaRecorder.addEventListener("dataavailable", (event) => {
+      if (event.data && event.data.size) recordedChunks.push(event.data);
+    });
+
+    mediaRecorder.start(1000);
+    badge(recordBadge, "REC", "live");
+    return true;
+  }
+
+  function stopVideoRecording() {
+    return new Promise((resolve) => {
+      if (!mediaRecorder || mediaRecorder.state === "inactive") {
+        resolve(null);
+        return;
+      }
+
+      const recorder = mediaRecorder;
+
+      recorder.addEventListener(
+        "stop",
+        () => {
+          const type = recorder.mimeType || recordedChunks[0]?.type || "video/webm";
+          recordingBlob = new Blob(recordedChunks, { type });
+
+          const extension = recordingExtension(type);
+          const filename =
+            "MOVE_" + filenameTimestamp(startTime || new Date()) +
+            "_reps-" + reps + "_score-" + score + "." + extension;
+
+          recordingFile = new File([recordingBlob], filename, { type, lastModified: Date.now() });
+
+          if (recordingURL) URL.revokeObjectURL(recordingURL);
+          recordingURL = URL.createObjectURL(recordingBlob);
+
+          resolve(recordingFile);
+        },
+        { once: true }
+      );
+
+      try {
+        recorder.requestData();
+      } catch {}
+
+      recorder.stop();
+    });
+  }
+
+  function downloadRecording() {
+    if (!recordingFile || !recordingURL) return false;
+
+    const anchor = document.createElement("a");
+    anchor.href = recordingURL;
+    anchor.download = recordingFile.name;
+    anchor.style.display = "none";
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    return true;
+  }
+
+  async function runCountdown() {
+    countdown.classList.add("show");
+
+    for (const value of ["3", "2", "1", "MOVE"]) {
+      countdownNumber.textContent = value;
+      countdownNumber.style.animation = "none";
+      void countdownNumber.offsetWidth;
+      countdownNumber.style.animation = "";
+      await sleep(value === "MOVE" ? 650 : 720);
+    }
+
+    countdown.classList.remove("show");
+  }
+
+  async function startSession() {
+    if (sessionActive) return;
+
+    startBtn.disabled = true;
+    startBtn.textContent = "PREPARING…";
+    secureWarning.style.display = "none";
+
+    target = Math.max(1, parseInt(targetInput.value, 10) || 10);
+    weight = Math.max(0, parseFloat(weightInput.value) || 0);
+    side = armInput.value;
+    facing = facingInput.value;
+
+    resetWorkoutEngine();
+    startTime = null;
+    endTime = null;
+    locationData = null;
+
+    try {
+      // Camera first so Android does not get competing permission prompts.
+      await openCamera();
+
+      setupView.style.display = "none";
+      stageView.style.display = "block";
+      resultView.style.display = "none";
+
+      badge(recordBadge, "CAMERA READY", "wait");
+      coach.textContent = "INITIALISING MOVE AI…";
+
+      await loadPoseDetector();
+
+      // Location permission is optional and happens only after camera.
+      await requestLocation();
+
+      startVideoRecording();
+
+      startTime = new Date();
+      sessionActive = true;
+
+      startClock();
+      startDetectionLoop();
+
+      await runCountdown();
+
+      coach.textContent = "EXTEND YOUR " + side.toUpperCase() + " ARM TO BEGIN.";
+    } catch (error) {
+      console.error(error);
+
+      stopDetectionLoop();
+      stopClock();
+      stopCameraTracks();
+
+      stageView.style.display = "none";
+      setupView.style.display = "block";
+
+      startBtn.disabled = false;
+      startBtn.textContent = "START MOVE";
+
+      secureWarning.style.display = "block";
+      secureWarning.textContent = error.message || "MOVE could not start the camera.";
+    }
+  }
+
+  async function finishSession() {
+    if (!sessionActive && !mediaRecorder) return;
+
+    stopBtn.disabled = true;
+    manualRepBtn.disabled = true;
+
+    coach.textContent = "SAVING YOUR MOVE…";
+    endTime = new Date();
+    sessionActive = false;
+
+    stopDetectionLoop();
+    stopClock();
+
+    const file = await stopVideoRecording();
+    stopCameraTracks();
+
+    if (file) {
+      downloadRecording();
+      toastMessage("Video saved: " + file.name, 3500);
+    } else {
+      toastMessage("Session ended. Recording was not available on this browser.", 4000);
+    }
+
+    showResult();
+  }
+
+  function showResult() {
+    const duration = (endTime || new Date()) - (startTime || new Date());
+
+    resultReps.textContent = reps;
+    resultScore.textContent = score;
+    resultVolume.textContent = (reps * weight).toLocaleString(undefined, { maximumFractionDigits: 1 }) + " kg";
+    resultDuration.textContent = formatDuration(duration);
+
+    filenameBox.textContent = recordingFile
+      ? "Recording: " + recordingFile.name
+      : "Recording unavailable on this browser.";
+
+    if (locationData) {
+      locationBox.textContent =
+        "Location: " + locationData.lat.toFixed(6) + ", " + locationData.lng.toFixed(6) +
+        " · accuracy ±" + Math.round(locationData.accuracy) + " m";
+    } else {
+      locationBox.textContent = "Location: not shared / unavailable";
+    }
+
+    shareVideoBtn.disabled = !recordingFile;
+
+    stageView.style.display = "none";
+    resultView.style.display = "block";
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function resultMessage() {
+    const location = locationData
+      ? locationData.lat.toFixed(6) + ", " + locationData.lng.toFixed(6) +
+        " (±" + Math.round(locationData.accuracy) + "m)"
+      : "Not shared";
+
+    const duration = formatDuration((endTime || new Date()) - (startTime || new Date()));
+    const filename = recordingFile?.name || "Recording unavailable";
+
+    return [
+      "Hi MOVE 👋",
+      "",
+      "I completed the MOVE Dumbbell Curl Challenge.",
+      "",
+      "Name: " + (personName.value.trim() || "Not provided"),
+      "Email: " + (personEmail.value.trim() || "Not provided"),
+      "Mobile / WhatsApp: " + (personPhone.value.trim() || "Not provided"),
+      "Location: " + location,
+      "",
+      "Result: " + reps + " / " + target + " reps",
+      "Score: " + score,
+      "Dumbbell: " + weight + " kg",
+      "Total volume: " + (reps * weight).toLocaleString(undefined, { maximumFractionDigits: 1 }) + " kg",
+      "Best combo: " + bestCombo + "x",
+      "Duration: " + duration,
+      "",
+      "Started: " + (startTime ? startTime.toLocaleString() : "Unknown"),
+      "Finished: " + (endTime ? endTime.toLocaleString() : "Unknown"),
+      "Start timestamp: " + (startTime ? startTime.toISOString() : "Unknown"),
+      "End timestamp: " + (endTime ? endTime.toISOString() : "Unknown"),
+      "Recording filename: " + filename,
+      "",
+      "Please find my MOVE workout video attached.",
+    ].join("\n");
+  }
+
+  function whatsappURL() {
+    const phone = String(CONFIG.whatsappNumber || "").replace(/\D/g, "");
+    const message = encodeURIComponent(resultMessage());
+
+    if (phone) {
+      return "https://wa.me/" + phone + "?text=" + message;
+    }
+
+    // No destination configured: WhatsApp asks the participant where to send it.
+    return "https://api.whatsapp.com/send?text=" + message;
+  }
+
+  async function shareVideo() {
+    if (!recordingFile) {
+      toastMessage("No recording file is available.");
+      return;
+    }
+
+    const payload = { title: "MOVE — Dumbbell Challenge", text: resultMessage(), files: [recordingFile] };
+
+    try {
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [recordingFile] })) {
+        await navigator.share(payload);
+        return;
+      }
+
+      // Fallback for browsers whose share sheet cannot attach files.
+      downloadRecording();
+      window.open(whatsappURL(), "_blank", "noopener");
+      toastMessage("Video downloaded. Attach it to the ready WhatsApp message.", 4300);
+    } catch (error) {
+      if (error?.name !== "AbortError") {
+        console.warn(error);
+        toastMessage("Share failed. Your downloaded recording is still safe.", 4000);
+      }
+    }
+  }
+
+  function createQR() {
+    qrCode.innerHTML = "";
+    qrPanel.classList.add("show");
+
+    if (!window.QRCode) {
+      qrCode.textContent = "QR engine did not load. Use the WhatsApp button.";
+      return;
+    }
+
+    new QRCode(qrCode, {
+      text: whatsappURL(),
+      width: 208,
+      height: 208,
+      correctLevel: QRCode.CorrectLevel.M,
+    });
+
+    qrPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  function celebrateGoal() {
+    celebration.classList.add("show");
+    const stopConfetti = fireConfetti();
+
+    if (navigator.vibrate) navigator.vibrate([60, 45, 100]);
+
+    setTimeout(() => {
+      celebration.classList.remove("show");
+      stopConfetti();
+      coach.textContent = "GOAL HIT · KEEP MOVING OR PRESS STOP + SAVE.";
+    }, 2700);
+  }
+
+  function fireConfetti() {
+    const ctx = confettiCanvas.getContext("2d");
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+
+    function resize() {
+      confettiCanvas.width = Math.floor(innerWidth * dpr);
+      confettiCanvas.height = Math.floor(innerHeight * dpr);
+      confettiCanvas.style.width = innerWidth + "px";
+      confettiCanvas.style.height = innerHeight + "px";
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    resize();
+
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return () => ctx.clearRect(0, 0, innerWidth, innerHeight);
+    }
+
+    const colours = ["#e0b569", "#c6a96e", "#efefef", "#f0cf87", "#8d774d"];
+
+    const particles = Array.from({ length: 130 }, () => ({
+      x: innerWidth / 2 + (Math.random() - 0.5) * 80,
+      y: innerHeight * 0.46,
+      vx: (Math.random() - 0.5) * 12,
+      vy: -Math.random() * 10 - 5,
+      gravity: 0.18 + Math.random() * 0.14,
+      rotation: Math.random() * Math.PI,
+      rotationSpeed: (Math.random() - 0.5) * 0.25,
+      width: 4 + Math.random() * 7,
+      height: 7 + Math.random() * 10,
+      colour: colours[Math.floor(Math.random() * colours.length)],
+    }));
+
+    const started = performance.now();
+    let animation = 0;
+
+    function draw(now) {
+      ctx.clearRect(0, 0, innerWidth, innerHeight);
+      const alpha = Math.max(0, 1 - (now - started) / 2600);
+
+      particles.forEach((particle) => {
+        particle.x += particle.vx;
+        particle.y += particle.vy;
+        particle.vy += particle.gravity;
+        particle.vx *= 0.994;
+        particle.rotation += particle.rotationSpeed;
+
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.translate(particle.x, particle.y);
+        ctx.rotate(particle.rotation);
+        ctx.fillStyle = particle.colour;
+        ctx.fillRect(-particle.width / 2, -particle.height / 2, particle.width, particle.height);
+        ctx.restore();
+      });
+
+      if (now - started < 2600) {
+        animation = requestAnimationFrame(draw);
+      } else {
+        ctx.clearRect(0, 0, innerWidth, innerHeight);
+      }
+    }
+
+    animation = requestAnimationFrame(draw);
+
+    return () => {
+      cancelAnimationFrame(animation);
+      ctx.clearRect(0, 0, innerWidth, innerHeight);
+    };
+  }
+
+  function manualRep() {
+    if (!sessionActive) return;
+    countRep();
+  }
+
+  function newSession() {
+    resultView.style.display = "none";
+    stageView.style.display = "none";
+    setupView.style.display = "block";
+    qrPanel.classList.remove("show");
+
+    startBtn.disabled = false;
+    startBtn.textContent = "START MOVE";
+    stopBtn.disabled = false;
+    manualRepBtn.disabled = false;
+
+    resetWorkoutEngine();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function hardRestartApp() {
+    try {
+      if (mediaRecorder && mediaRecorder.state !== "inactive") mediaRecorder.stop();
+    } catch {}
+
+    stopDetectionLoop();
+    stopClock();
+    stopCameraTracks();
+    location.reload();
+  }
+
+  startBtn.addEventListener("click", startSession);
+  stopBtn.addEventListener("click", finishSession);
+  manualRepBtn.addEventListener("click", manualRep);
+
+  hardReset.addEventListener("click", () => {
+    if (sessionActive) {
+      const confirmed = confirm("Hard restart will stop the current session. Continue?");
+      if (!confirmed) return;
+    }
+    hardRestartApp();
+  });
+
+  shareVideoBtn.addEventListener("click", shareVideo);
+  whatsappBtn.addEventListener("click", () => window.open(whatsappURL(), "_blank", "noopener"));
+  qrBtn.addEventListener("click", createQR);
+
+  downloadBtn.addEventListener("click", () => {
+    if (!downloadRecording()) toastMessage("No recording is available.");
+  });
+
+  newSessionBtn.addEventListener("click", newSession);
+
+  // Regenerate the QR if participant details change after it's already shown.
+  [personName, personEmail, personPhone].forEach((field) => {
+    field.addEventListener("change", () => {
+      if (qrPanel.classList.contains("show")) createQR();
+    });
+  });
+
+  window.addEventListener("beforeunload", () => {
+    stopDetectionLoop();
+    stopClock();
+    stopCameraTracks();
+    if (recordingURL) URL.revokeObjectURL(recordingURL);
+  });
+
+  if (!window.isSecureContext) {
+    secureWarning.style.display = "block";
+    secureWarning.textContent =
+      "CAMERA BLOCKED: this page is not running on HTTPS. Upload this single HTML file to your HTTPS host and open the https:// URL.";
+    startBtn.disabled = true;
+    startBtn.textContent = "HTTPS REQUIRED";
+  }
+
+  updateHUD();
+})();
+</script>
+
+</body>
+</html>
