@@ -4,7 +4,7 @@ import { env } from "../../env";
 // Override per-environment via NEXT_PUBLIC_LAUNCH_AT (e.g. set it to a past
 // date on Vercel's Preview environment so the develop branch tests unlocked,
 // while Production keeps this real value). Baked in at build time.
-const DEFAULT_LAUNCH_AT = "2026-09-09T19:30:00+05:30";
+const DEFAULT_LAUNCH_AT = "2026-09-09T19:15:00+05:30";
 export const LAUNCH_AT = new Date(
   env.NEXT_PUBLIC_LAUNCH_AT ?? DEFAULT_LAUNCH_AT,
 ).getTime();
