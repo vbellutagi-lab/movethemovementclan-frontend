@@ -1131,7 +1131,8 @@ a {
     grid-template-columns: repeat(2, 1fr);
   }
   .mvAbout,
-  .mvSplit {
+  .mvSplit,
+  .mvSplit.even {
     grid-template-columns: 1fr;
   }
   .mvFooter .grid {
