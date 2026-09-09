@@ -55,31 +55,7 @@
 
       <p class="tagline">Future starts by just a move.</p>
 
-      <div class="countdown" id="launchCountdown" aria-live="polite">
-        <span class="countdown__label">Doors open in</span>
-        <span class="countdown__clock">
-          <span class="countdown__unit">
-            <span class="countdown__digits"
-              ><span class="countdown__value" id="cdHours">00</span></span
-            >
-            <span class="countdown__unit-label">Hrs</span>
-          </span>
-          <span class="countdown__sep" aria-hidden="true">:</span>
-          <span class="countdown__unit">
-            <span class="countdown__digits"
-              ><span class="countdown__value" id="cdMinutes">00</span></span
-            >
-            <span class="countdown__unit-label">Min</span>
-          </span>
-          <span class="countdown__sep" aria-hidden="true">:</span>
-          <span class="countdown__unit">
-            <span class="countdown__digits"
-              ><span class="countdown__value" id="cdSeconds">00</span></span
-            >
-            <span class="countdown__unit-label">Sec</span>
-          </span>
-        </span>
-      </div>
+      <a class="cta-play" id="skipToWebsiteBtn" href="/">Skip to Website</a>
 
       <div class="horizon" aria-hidden="true"></div>
 
@@ -220,60 +196,18 @@
       }
 
       function initLaunchCountdown() {
-        const root = document.getElementById("launchCountdown");
-        if (!root) return;
-
-        const hoursEl = document.getElementById("cdHours");
-        const minutesEl = document.getElementById("cdMinutes");
-        const secondsEl = document.getElementById("cdSeconds");
-        const labelEl = root.querySelector(".countdown__label");
-        const pad = (value) => String(value).padStart(2, "0");
-
-        let previous = null;
         let timer = null;
 
-        function playTick(el, value) {
-          if (previous && previous[el.id] === value) return;
-          el.classList.remove("is-ticking");
-          // Force reflow so the animation restarts even if the class never left.
-          void el.offsetWidth;
-          el.classList.add("is-ticking");
-        }
-
-        function render() {
-          const remaining = LAUNCH_AT - Date.now();
-
-          if (remaining <= 0) {
-            labelEl.textContent = "We're live";
-            hoursEl.textContent = "00";
-            minutesEl.textContent = "00";
-            secondsEl.textContent = "00";
-            root.classList.add("countdown--live");
+        function check() {
+          if (Date.now() >= LAUNCH_AT) {
             unlockPlayButton();
             if (timer) clearInterval(timer);
             return;
           }
-
-          const totalSeconds = Math.floor(remaining / 1000);
-          const next = {
-            cdHours: pad(Math.floor(totalSeconds / 3600)),
-            cdMinutes: pad(Math.floor((totalSeconds % 3600) / 60)),
-            cdSeconds: pad(totalSeconds % 60),
-          };
-
-          hoursEl.textContent = next.cdHours;
-          minutesEl.textContent = next.cdMinutes;
-          secondsEl.textContent = next.cdSeconds;
-
-          playTick(secondsEl, next.cdSeconds);
-          playTick(minutesEl, next.cdMinutes);
-          playTick(hoursEl, next.cdHours);
-
-          previous = next;
         }
 
-        render();
-        timer = setInterval(render, 1000);
+        check();
+        timer = setInterval(check, 1000);
       }
 
       initLaunchCountdown();
