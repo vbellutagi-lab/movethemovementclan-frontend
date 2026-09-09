@@ -938,7 +938,7 @@
           letter-spacing: 3px;
         }
         .countdown {
-          top: 63%;
+          top: 67%;
           gap: 8px;
         }
         .cta-play {
@@ -966,8 +966,8 @@
         }
         .brand {
           left: 50%;
-          top: 33%;
-          width: min(40vw, 210px);
+          top: 28%;
+          width: min(34vw, 175px);
           height: auto;
           aspect-ratio: 299 / 362;
         }
@@ -981,7 +981,7 @@
           letter-spacing: 4px;
         }
         .unlock-note {
-          top: 63%;
+          top: 67%;
           font-size: 8px;
           letter-spacing: 2.5px;
         }
