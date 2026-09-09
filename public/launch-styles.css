@@ -296,6 +296,10 @@
         }
       }
 
+      #skipToWebsiteBtn {
+        top: 84%;
+      }
+
       .unlock-note {
         position: absolute;
         z-index: 10;
@@ -948,6 +952,9 @@
           font-size: 18px;
           letter-spacing: 1.5px;
         }
+        #skipToWebsiteBtn {
+          top: 77%;
+        }
         .countdown__label {
           font-size: 9px;
           letter-spacing: 2.5px;
@@ -1027,6 +1034,9 @@
         }
         .countdown {
           top: 71%;
+        }
+        #skipToWebsiteBtn {
+          top: 82%;
         }
       }
 
