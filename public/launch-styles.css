@@ -177,7 +177,7 @@
         position: absolute;
         z-index: 10;
         left: calc(50% - 9px);
-        top: 36%;
+        top: 29%;
         width: min(17.94vw, 300px);
         height: auto;
         aspect-ratio: 299 / 362;
@@ -193,7 +193,7 @@
       .tagline {
         position: absolute;
         z-index: 10;
-        top: 78%;
+        top: 71%;
         left: 50%;
         transform: translateX(-50%);
         margin: 0;
@@ -209,7 +209,7 @@
       .countdown {
         position: absolute;
         z-index: 11;
-        top: 19%;
+        top: 76.5%;
         left: 50%;
         transform: translateX(-50%);
         display: flex;
@@ -220,10 +220,86 @@
         white-space: nowrap;
       }
 
+      .cta-play {
+        position: absolute;
+        z-index: 12;
+        top: 19%;
+        left: 50%;
+        transform: translateX(-50%);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        min-height: 56px;
+        padding: clamp(17px, 2.1vw, 25px) clamp(40px, 4.6vw, 62px);
+        border-radius: 999px;
+        text-decoration: none;
+        text-transform: uppercase;
+        white-space: nowrap;
+        color: #17130c;
+        font-size: clamp(16px, 1.6vw, 23px);
+        font-weight: 800;
+        letter-spacing: clamp(1.5px, 0.24vw, 3px);
+        border: 1px solid rgba(255, 227, 164, 0.55);
+        background:
+          linear-gradient(
+            190deg,
+            rgba(255, 255, 255, 0.16) 0%,
+            transparent 24%,
+            rgba(255, 255, 255, 0.08) 47%,
+            transparent 72%
+          ),
+          linear-gradient(
+            180deg,
+            var(--gold-hi) 0%,
+            var(--gold) 55%,
+            var(--gold-low) 100%
+          );
+        box-shadow:
+          0 10px 28px rgba(224, 181, 105, 0.32),
+          inset 0 1px 0 rgba(255, 255, 255, 0.35);
+        transition:
+          transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1),
+          box-shadow 0.28s ease,
+          filter 0.28s ease;
+        animation: ctaPulse 2.2s ease-in-out infinite;
+      }
+      .cta-play:hover {
+        transform: translateX(-50%) translateY(-2px);
+        filter: brightness(1.05);
+      }
+      .cta-play:active {
+        transform: translateX(-50%) translateY(0);
+      }
+      .cta-play:focus-visible {
+        outline: 2px solid var(--white);
+        outline-offset: 4px;
+      }
+      .cta-play.is-locked {
+        filter: saturate(0.8) brightness(0.9);
+        box-shadow: none;
+        cursor: not-allowed;
+        pointer-events: none;
+        animation: none;
+      }
+      @keyframes ctaPulse {
+        0%,
+        100% {
+          box-shadow:
+            0 10px 28px rgba(224, 181, 105, 0.32),
+            inset 0 1px 0 rgba(255, 255, 255, 0.35);
+        }
+        50% {
+          box-shadow:
+            0 10px 34px rgba(224, 181, 105, 0.5),
+            inset 0 1px 0 rgba(255, 255, 255, 0.45);
+        }
+      }
+
       .unlock-note {
         position: absolute;
         z-index: 10;
-        top: 83.5%;
+        top: 76.5%;
         left: 50%;
         transform: translateX(-50%);
         margin: 0;
@@ -359,17 +435,6 @@
           transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1),
           box-shadow 0.28s ease,
           filter 0.28s ease;
-      }
-      .side-sticker--right {
-        right: 0;
-        border-right: 0;
-        border-radius: 10px 0 0 10px;
-        box-shadow:
-          inset 1px 0 0 rgba(255, 255, 255, 0.24),
-          -10px 0 24px rgba(0, 0, 0, 0.32);
-      }
-      .side-sticker--right:hover {
-        transform: translateY(-50%) translateX(-4px);
       }
       .side-sticker--left {
         left: 0;
@@ -873,8 +938,15 @@
           letter-spacing: 3px;
         }
         .countdown {
-          top: 13%;
+          top: 68%;
           gap: 8px;
+        }
+        .cta-play {
+          top: 13%;
+          min-height: 50px;
+          padding: 15px clamp(30px, 8.5vw, 42px);
+          font-size: 15px;
+          letter-spacing: 1.5px;
         }
         .countdown__label {
           font-size: 9px;
@@ -894,13 +966,13 @@
         }
         .brand {
           left: 50%;
-          top: 33%;
+          top: 26%;
           width: min(56vw, 300px);
           height: auto;
           aspect-ratio: 299 / 362;
         }
         .tagline {
-          top: 70%;
+          top: 62%;
           width: 90%;
           white-space: normal;
           text-align: center;
@@ -909,7 +981,7 @@
           letter-spacing: 4px;
         }
         .unlock-note {
-          top: 76%;
+          top: 68%;
           font-size: 8px;
           letter-spacing: 2.5px;
         }
@@ -942,16 +1014,19 @@
           min-height: 520px;
         }
         .brand {
-          top: 32%;
+          top: 26%;
           width: min(16.2vw, 265px);
           height: auto;
           aspect-ratio: 299 / 362;
         }
         .tagline {
-          top: 76%;
+          top: 70%;
         }
         .unlock-note {
-          top: 82%;
+          top: 76%;
+        }
+        .countdown {
+          top: 76%;
         }
       }
 
