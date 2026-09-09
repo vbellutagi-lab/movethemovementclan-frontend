@@ -18,9 +18,19 @@ export function Footer() {
     <footer className="mvFooter mv-max">
       <div className="grid">
         <div className="col">
-          <Image src="/brand/logo-lockup-stacked-gold.png" alt="Move" width={120} height={80} />
+          <Image
+            src="/brand/logo-lockup-stacked-gold.png"
+            alt="Move"
+            width={100}
+            height={70}
+          />
           <p
-            style={{ fontSize: "12.5px", color: "var(--text-muted)", maxWidth: 260, marginTop: 12 }}
+            style={{
+              fontSize: "12.5px",
+              color: "var(--text-muted)",
+              maxWidth: 260,
+              marginTop: 12,
+            }}
           >
             {footer.tagline}
           </p>
