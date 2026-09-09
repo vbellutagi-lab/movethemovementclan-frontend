@@ -177,8 +177,8 @@
         position: absolute;
         z-index: 10;
         left: calc(50% - 9px);
-        top: 29%;
-        width: min(17.94vw, 300px);
+        top: 36%;
+        width: min(12.5vw, 210px);
         height: auto;
         aspect-ratio: 299 / 362;
         transform: translateX(-50%);
@@ -193,7 +193,7 @@
       .tagline {
         position: absolute;
         z-index: 10;
-        top: 71%;
+        top: 66%;
         left: 50%;
         transform: translateX(-50%);
         margin: 0;
@@ -209,7 +209,7 @@
       .countdown {
         position: absolute;
         z-index: 11;
-        top: 76.5%;
+        top: 71.5%;
         left: 50%;
         transform: translateX(-50%);
         display: flex;
@@ -229,15 +229,15 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 10px;
-        min-height: 56px;
-        padding: clamp(17px, 2.1vw, 25px) clamp(40px, 4.6vw, 62px);
+        gap: 12px;
+        min-height: 68px;
+        padding: clamp(22px, 2.8vw, 32px) clamp(50px, 5.8vw, 78px);
         border-radius: 999px;
         text-decoration: none;
         text-transform: uppercase;
         white-space: nowrap;
         color: #17130c;
-        font-size: clamp(16px, 1.6vw, 23px);
+        font-size: clamp(20px, 2.2vw, 30px);
         font-weight: 800;
         letter-spacing: clamp(1.5px, 0.24vw, 3px);
         border: 1px solid rgba(255, 227, 164, 0.55);
@@ -938,14 +938,14 @@
           letter-spacing: 3px;
         }
         .countdown {
-          top: 68%;
+          top: 63%;
           gap: 8px;
         }
         .cta-play {
           top: 13%;
-          min-height: 50px;
-          padding: 15px clamp(30px, 8.5vw, 42px);
-          font-size: 15px;
+          min-height: 60px;
+          padding: 18px clamp(36px, 10vw, 52px);
+          font-size: 18px;
           letter-spacing: 1.5px;
         }
         .countdown__label {
@@ -966,13 +966,13 @@
         }
         .brand {
           left: 50%;
-          top: 26%;
-          width: min(56vw, 300px);
+          top: 33%;
+          width: min(40vw, 210px);
           height: auto;
           aspect-ratio: 299 / 362;
         }
         .tagline {
-          top: 62%;
+          top: 58%;
           width: 90%;
           white-space: normal;
           text-align: center;
@@ -981,7 +981,7 @@
           letter-spacing: 4px;
         }
         .unlock-note {
-          top: 68%;
+          top: 63%;
           font-size: 8px;
           letter-spacing: 2.5px;
         }
@@ -1014,19 +1014,19 @@
           min-height: 520px;
         }
         .brand {
-          top: 26%;
-          width: min(16.2vw, 265px);
+          top: 32%;
+          width: min(11.5vw, 185px);
           height: auto;
           aspect-ratio: 299 / 362;
         }
         .tagline {
-          top: 70%;
+          top: 65%;
         }
         .unlock-note {
-          top: 76%;
+          top: 71%;
         }
         .countdown {
-          top: 76%;
+          top: 71%;
         }
       }
 
