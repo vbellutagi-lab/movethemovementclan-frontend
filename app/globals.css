@@ -140,7 +140,10 @@ a {
   align-items: flex-end;
   overflow: hidden;
   padding: var(--space-20) var(--space-8) var(--space-16);
-  padding-left: max(var(--space-8), calc((100vw - var(--page-max)) / 2 + var(--space-8)));
+  padding-left: max(
+    var(--space-8),
+    calc((100vw - var(--page-max)) / 2 + var(--space-8))
+  );
 }
 .mvHero .heroImg {
   position: absolute;
@@ -504,7 +507,7 @@ a {
 }
 .coachFace .photo {
   position: relative;
-  height: 160px;
+  height: 210px;
 }
 .coachFace .photo img {
   object-fit: cover;
@@ -524,7 +527,12 @@ a {
   font: 400 30px var(--font-display);
   letter-spacing: 0.04em;
   color: var(--text-on-gold);
-  background: linear-gradient(135deg, var(--gold-300), var(--gold-100), var(--gold-300));
+  background: linear-gradient(
+    135deg,
+    var(--gold-300),
+    var(--gold-100),
+    var(--gold-300)
+  );
   background-size: 220% 220%;
   border-radius: 42% 58% 65% 35% / 45% 45% 55% 55%;
   box-shadow: var(--glow-gold);
@@ -534,20 +542,33 @@ a {
     avatarGradient 6s ease infinite;
 }
 .avatarPlaceholder.accent-1 .badge {
-  background: linear-gradient(135deg, var(--gold-400), var(--gold-200), var(--gold-400));
+  background: linear-gradient(
+    135deg,
+    var(--gold-400),
+    var(--gold-200),
+    var(--gold-400)
+  );
   background-size: 220% 220%;
-  animation-delay: -1.5s, -1s, -2s;
+  animation-delay:
+    -1.5s,
+    -1s,
+    -2s;
 }
 .avatarPlaceholder.accent-2 .badge {
-  background: linear-gradient(135deg, var(--gold-500), var(--gold-300), var(--gold-500));
+  background: linear-gradient(
+    135deg,
+    var(--gold-500),
+    var(--gold-300),
+    var(--gold-500)
+  );
   background-size: 220% 220%;
-  animation-delay: -3s, -2s, -4s;
+  animation-delay:
+    -3s,
+    -2s,
+    -4s;
 }
 .coachFlip:hover .avatarPlaceholder .badge {
-  animation-duration:
-    3s,
-    1.6s,
-    2.6s;
+  animation-duration: 3s, 1.6s, 2.6s;
 }
 @keyframes avatarMorph {
   0%,
@@ -618,7 +639,6 @@ a {
   color: var(--move-gold);
 }
 .coachFace .flipHint {
-  margin-top: auto;
   font-size: 11px;
   font-weight: 600;
   color: var(--move-gold);
@@ -754,7 +774,8 @@ a {
     box-shadow 0.3s var(--ease-out);
 }
 .packCard:hover {
-  transform: perspective(900px) rotateX(var(--tiltX)) rotateY(var(--tiltY)) translateY(-4px);
+  transform: perspective(900px) rotateX(var(--tiltX)) rotateY(var(--tiltY))
+    translateY(-4px);
   border-color: var(--move-gold);
   box-shadow: var(--glow-gold);
 }
