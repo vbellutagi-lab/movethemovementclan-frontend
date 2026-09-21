@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { LogIn, Menu, X } from "lucide-react";
 import { useState } from "react";
-import { env } from "../../env";
 
 const NAV = [
   ["/#sessions", "Sessions"],
@@ -16,7 +15,7 @@ const NAV = [
 
 export function Header() {
   const [open, setOpen] = useState(false);
-  const loginHref = `${env.NEXT_PUBLIC_APP_URL ?? ""}/login`;
+  const loginHref = "https://web.movethemovementclan.in/";
 
   return (
     <header className="mvHeader">
@@ -25,7 +24,11 @@ export function Header() {
         <Link href="/#contact">Book a consultation</Link>
       </div>
       <div className="mv-max mvHeadRow">
-        <Link href="/" aria-label="Move — The Movement Clan" style={{ display: "flex" }}>
+        <Link
+          href="/"
+          aria-label="Move — The Movement Clan"
+          style={{ display: "flex" }}
+        >
           <Image
             src="/brand/logo-horizontal-light.png"
             alt="Move"
