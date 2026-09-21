@@ -2,12 +2,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { Mail } from "lucide-react";
 import { client } from "../data/client";
-import { env } from "../../env";
 import { FacebookIcon, InstagramIcon } from "./SocialIcons";
 
 export function Footer() {
   const { footer, centre, social } = client;
-  const loginHref = `${env.NEXT_PUBLIC_APP_URL ?? ""}/login`;
+  const loginHref = "https://web.movethemovementclan.in/";
   const clanLinks: Record<string, string> = {
     "Our coaches": "/#coaches",
     Contact: "/#contact",
