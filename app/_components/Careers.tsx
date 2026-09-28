@@ -6,9 +6,24 @@ import { client } from "../data/client";
 export function Careers() {
   const { careers } = client;
 
+  // No backend endpoint yet, so hand the application to the user's mail app.
+  // mailto: cannot carry attachments, so the form asks them to attach the resume there.
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    // UI only for v1 - no backend endpoint yet (see leads follow-up in the plan).
     e.preventDefault();
+    const data = new FormData(e.currentTarget);
+    const name = String(data.get("name") ?? "").trim();
+    const role = String(data.get("role") ?? "");
+    const why = String(data.get("why") ?? "").trim();
+
+    const subject = `Application: ${role || "General"} - ${name}`;
+    const body = [
+      `Name: ${name}`,
+      `Role: ${role || "General"}`,
+      "",
+      `Why Move: ${why || "-"}`,
+    ].join("\n");
+
+    window.location.href = `mailto:${client.centre.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   }
 
   return (
@@ -23,10 +38,19 @@ export function Careers() {
         <div>
           {careers.roles.map((role) => (
             <div className="roleCard" key={role.title}>
-              <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 6 }}>
+              <div
+                style={{
+                  flex: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 6,
+                }}
+              >
                 <span className="t">{role.title}</span>
                 <span className="meta">{role.meta}</span>
-                <span style={{ fontSize: "13px", color: "var(--text-muted)" }}>{role.detail}</span>
+                <span style={{ fontSize: "13px", color: "var(--text-muted)" }}>
+                  {role.detail}
+                </span>
               </div>
               <ArrowUpRight size={18} />
             </div>
@@ -36,11 +60,11 @@ export function Careers() {
           <span className="move-label">Send a resume</span>
           <label className="field">
             <span className="lbl">Full name</span>
-            <input placeholder="Your name" required />
+            <input name="name" placeholder="Your name" required />
           </label>
           <label className="field">
             <span className="lbl">Role</span>
-            <select defaultValue="">
+            <select name="role" defaultValue="">
               <option value="" disabled>
                 Choose a role
               </option>
@@ -52,15 +76,20 @@ export function Careers() {
             </select>
           </label>
           <label className="field">
-            <span className="lbl">Resume (PDF, up to 5 MB)</span>
-            <input type="file" accept="application/pdf" />
-          </label>
-          <label className="field">
             <span className="lbl">Why Move</span>
-            <textarea rows={3} placeholder="Two lines is plenty." />
+            <textarea name="why" rows={3} placeholder="Two lines is plenty." />
           </label>
+          <p
+            style={{
+              margin: 0,
+              fontSize: "12.5px",
+              color: "var(--text-muted)",
+            }}
+          >
+            Attach your resume (PDF) to email before sending.
+          </p>
           <button type="submit" className="mvBtn primary block">
-            Submit application
+            Email application
           </button>
         </form>
       </div>
