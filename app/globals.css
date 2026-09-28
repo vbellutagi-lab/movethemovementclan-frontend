@@ -676,6 +676,27 @@ a {
   gap: var(--space-6);
   margin-bottom: var(--space-8);
 }
+.ratingStars {
+  display: flex;
+  gap: 4px;
+  margin-top: 6px;
+  font-size: 20px;
+  line-height: 1;
+}
+.ratingStars .on {
+  color: var(--move-gold);
+}
+.ratingStars .off {
+  color: var(--ink-500);
+}
+.ratingCount {
+  margin-top: 6px;
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+.mvRatingRow .writeReview {
+  margin-left: auto;
+}
 .mvRatingRow .num {
   font: 400 40px var(--font-display);
   color: var(--gold-300);
@@ -704,9 +725,29 @@ a {
   line-height: 1.6;
   margin: 0;
 }
+.reviewCard p.clamp {
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.reviewStars {
+  color: var(--move-gold);
+  font-size: 15px;
+  letter-spacing: 2px;
+}
+.reviewStars .off {
+  color: var(--ink-500);
+}
 .reviewCard .who b {
   display: block;
   font-size: 13px;
+}
+.reviewCard .who a,
+.mvRatingRow a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 .reviewCard .who span {
   font-size: 11.5px;
@@ -938,6 +979,13 @@ a {
   gap: 10px;
   align-items: flex-start;
   line-height: 1.5;
+}
+.centreCard .mapEmbed {
+  width: 100%;
+  height: 220px;
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-md);
+  filter: grayscale(0.4) contrast(1.05);
 }
 .centreCard .metaRow span svg {
   flex-shrink: 0;
@@ -1182,4 +1230,98 @@ a {
   .mvReviews {
     margin-top: var(--section-y-sm);
   }
+}
+
+/* ---------- google reviews: sideways scroll, equal-height cards ---------- */
+
+.reviewCarousel {
+  position: relative;
+}
+.reviewTrack {
+  display: flex;
+  gap: var(--space-5);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  /* room for the hover lift + gold glow, which overflow-x would otherwise clip */
+  padding: var(--space-4) var(--space-2) var(--space-8);
+  scroll-padding-inline: var(--space-2);
+}
+.reviewTrack::-webkit-scrollbar {
+  display: none;
+}
+.reviewNav {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  width: 44px;
+  height: 44px;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  padding: 0 0 4px;
+  border-radius: 50%;
+  border: 1px solid var(--move-gold);
+  background: var(--ink-900);
+  color: var(--move-gold);
+  font: 400 28px/1 var(--font-body);
+  cursor: pointer;
+  transition:
+    opacity 0.2s var(--ease-out),
+    background 0.2s var(--ease-out);
+}
+.reviewNav:hover:not(:disabled) {
+  background: var(--move-gold);
+  color: var(--text-on-gold);
+}
+.reviewNav:disabled {
+  opacity: 0;
+  pointer-events: none;
+}
+.reviewNav.prev {
+  left: -14px;
+}
+.reviewNav.next {
+  right: -14px;
+}
+.reviewItem {
+  display: flex;
+  flex: 0 0 min(340px, 85%);
+  scroll-snap-align: start;
+}
+.reviewItem .reviewCard {
+  flex: 1;
+}
+.reviewTop {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.reviewAvatar {
+  width: 40px;
+  height: 40px;
+  flex: none;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--border-hairline);
+}
+.reviewAvatar.fallback {
+  display: grid;
+  place-items: center;
+  font: 400 15px var(--font-display);
+  color: var(--text-on-gold);
+  background: var(--move-gold);
+}
+.reviewMore {
+  align-self: flex-start;
+  margin-top: auto;
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font: 600 12.5px var(--font-body);
+  color: var(--move-gold);
+}
+.reviewMore:hover {
+  color: var(--gold-200);
 }

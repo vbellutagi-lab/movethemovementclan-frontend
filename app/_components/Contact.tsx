@@ -77,6 +77,14 @@ export function Contact() {
               <a href={mailHref}>{centre.email}</a>
             </span>
           </div>
+          <iframe
+            className="mapEmbed"
+            title={`Map of ${centre.name}`}
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3887.575080410366!2d77.53897237574041!3d12.999007587318884!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bae3da3f61c37ff%3A0xff6f411bd8c94e7d!2sMOVE%2C%20The%20Movement%20Clan!5e0!3m2!1sen!2sfr!4v1789984863797!5m2!1sen!2sfr"
+            loading="lazy"
+            referrerPolicy="strict-origin-when-cross-origin"
+            allowFullScreen
+          />
           <a
             className="mvBtn secondary block"
             href={directionsHref}

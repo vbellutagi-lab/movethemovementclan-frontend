@@ -66,6 +66,13 @@ export function Footer() {
         <div className="col">
           <span className="h">Centre</span>
           <Link href="/#contact">{centre.name}</Link>
+          <a
+            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(centre.address)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Get directions
+          </a>
         </div>
         <div className="col">
           <span className="h">Clan</span>
