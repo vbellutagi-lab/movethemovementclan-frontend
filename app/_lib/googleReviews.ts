@@ -35,7 +35,12 @@ type PlacesResponse = {
 export async function getGoogleReviews(): Promise<GoogleReviews | null> {
   const key = process.env.GOOGLE_PLACES_API_KEY;
   const placeId = process.env.GOOGLE_PLACE_ID;
-  if (!key || !placeId) return null;
+  if (!key || !placeId) {
+    console.error(
+      "[googleReviews] GOOGLE_PLACES_API_KEY or GOOGLE_PLACE_ID is not set",
+    );
+    return null;
+  }
 
   try {
     const res = await fetch(
@@ -49,7 +54,12 @@ export async function getGoogleReviews(): Promise<GoogleReviews | null> {
         next: { revalidate: 60 * 60 * 24 },
       },
     );
-    if (!res.ok) return null;
+    if (!res.ok) {
+      console.error(
+        `[googleReviews] Places API ${res.status}: ${(await res.text()).slice(0, 300)}`,
+      );
+      return null;
+    }
 
     const data = (await res.json()) as PlacesResponse;
     const list = (data.reviews ?? [])
@@ -74,7 +84,8 @@ export async function getGoogleReviews(): Promise<GoogleReviews | null> {
         `https://search.google.com/local/writereview?placeid=${encodeURIComponent(placeId)}`,
       list,
     };
-  } catch {
+  } catch (err) {
+    console.error("[googleReviews] fetch failed", err);
     return null;
   }
 }
