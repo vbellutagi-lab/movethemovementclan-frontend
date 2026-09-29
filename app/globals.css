@@ -86,6 +86,10 @@ a {
   text-transform: uppercase;
   font-weight: 700;
   cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+  justify-content: center;
   border: 1px solid transparent;
   font-family: var(--font-body);
   transition:
@@ -123,6 +127,50 @@ a {
 .mvBtn.block {
   width: 100%;
   justify-content: center;
+}
+.mvMobileMenu {
+  max-height: calc(100dvh - 100%);
+  overflow-y: auto;
+  border-top: 1px solid var(--border-hairline);
+  background: var(--bg-raised);
+  animation: mvMenuIn 0.22s var(--ease-out);
+}
+.mvMobileMenu nav {
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--space-2);
+  padding-bottom: var(--space-6);
+}
+.mvMobileMenu nav a:not(.mvBtn) {
+  display: flex;
+  align-items: center;
+  min-height: 56px;
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-hairline);
+}
+.mvMobileMenu nav a:not(.mvBtn):active {
+  color: var(--move-gold);
+}
+.mvMobileMenu .mvBtn {
+  margin-top: var(--space-3);
+}
+.mvMobileMenu nav a:not(.mvBtn) + .mvBtn {
+  margin-top: var(--space-6);
+}
+@keyframes mvMenuIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mvMobileMenu {
+    animation: none;
+  }
 }
 .mvMenuBtn {
   display: none;
@@ -224,11 +272,11 @@ a {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: var(--space-10);
-  padding: var(--space-8) 0;
+  padding-block: var(--space-8);
 }
 .mvStrip .item {
   display: flex;
-  gap: 12px;
+  gap: 14px;
 }
 .mvStrip .item svg {
   color: var(--move-gold);
@@ -250,7 +298,7 @@ a {
 /* ---------- generic section head ---------- */
 
 .mvSection {
-  padding: var(--section-y) 0 0;
+  padding-top: var(--section-y); /* keep .mv-max's side gutter */
 }
 .mvSection.tight {
   padding-top: var(--space-16);
@@ -662,6 +710,82 @@ a {
   background: color-mix(in srgb, var(--move-gold) 12%, transparent);
 }
 
+/* ---------- gallery ---------- */
+
+.mvGallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 328px), 1fr));
+  gap: var(--space-5);
+  justify-items: start;
+}
+.mvGallery .galleryItem {
+  scroll-margin-top: 120px; /* clear the sticky header when jumping to /#gallery-<id> */
+  width: 100%;
+  max-width: 284px;
+}
+.mvGallery .reelCard {
+  margin: 0;
+  background: var(--surface-card);
+  border: var(--border-strong) solid color-mix(in srgb, var(--move-gold) 55%, transparent);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  transition:
+    transform 0.4s var(--ease-out),
+    border-color 0.4s var(--ease-out),
+    box-shadow 0.4s var(--ease-out);
+}
+.mvGallery .reelCard:hover {
+  transform: translateY(-4px);
+  border-color: var(--move-gold);
+  box-shadow: var(--glow-gold);
+}
+.mvGallery .reelMedia {
+  /* Instagram's embed doesn't scale cleanly with width, so lay it out at its
+     natural 400px and crop to the reel: a 54px header, then a 498px-tall
+     video pillarboxed to a 280px-wide 9:16 reel at x=60, then its footer. */
+  width: 280px;
+  max-width: 100%;
+  height: 494px;
+  overflow: hidden;
+  background: var(--bg-raised);
+  border-bottom: 1px solid var(--border-hairline);
+}
+.mvGallery .reelFrame {
+  display: block;
+  width: 400px;
+  height: 900px;
+  margin: -54px 0 0 -60px;
+  border: 0;
+}
+.mvGallery .reelCaption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+}
+.mvGallery .reelCaption a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--move-gold);
+}
+.mvGallery .reelCaption a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .mvGallery .reelCard {
+    transition: none;
+  }
+  .mvGallery .reelCard:hover {
+    transform: none;
+  }
+}
+
 /* ---------- reviews ---------- */
 
 .mvReviews {
@@ -696,6 +820,16 @@ a {
 }
 .mvRatingRow .writeReview {
   margin-left: auto;
+}
+@media (max-width: 640px) {
+  .mvRatingRow {
+    flex-wrap: wrap;
+    gap: var(--space-4) var(--space-5);
+  }
+  .mvRatingRow .writeReview {
+    margin-left: 0;
+    width: 100%;
+  }
 }
 .mvRatingRow .num {
   font: 400 40px var(--font-display);
@@ -744,7 +878,7 @@ a {
   font-size: 13px;
 }
 .reviewCard .who a,
-.mvRatingRow a {
+.mvRatingRow a:not(.mvBtn) {
   color: inherit;
   text-decoration: underline;
   text-underline-offset: 2px;
@@ -1210,12 +1344,63 @@ a {
   .mvNav {
     display: none;
   }
+  .mvHeadRow > a:first-child {
+    margin-right: auto;
+  }
   .mvMenuBtn {
     display: inline-flex;
+  }
+  .mvLoginBtn {
+    display: none; /* Login lives inside the mobile menu instead */
   }
 }
 
 @media (max-width: 640px) {
+  :root {
+    --section-y: 64px;
+  }
+  .mv-max {
+    padding-left: var(--space-5);
+    padding-right: var(--space-5);
+  }
+  .mvPromo {
+    padding: 8px var(--space-5);
+    font-size: 11px;
+    line-height: 1.5;
+  }
+  .mvPromo a {
+    display: inline-block;
+    padding: 0;
+    margin-left: 8px;
+    font-size: 11px;
+  }
+  .planToggle {
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .planToggle button {
+    padding: 9px 12px;
+    white-space: nowrap;
+  }
+  .mvHeadRow {
+    height: 60px;
+    gap: var(--space-3);
+  }
+  .mvHeadRow img {
+    height: 24px;
+  }
+  .mvHeadActions {
+    gap: 8px;
+  }
+  .mvHeadActions .mvBtn {
+    height: 40px;
+    padding: 0 14px;
+  }
+  .mvHeadActions .mvMenuBtn {
+    width: 40px;
+    padding: 0;
+  }
   .mvCards3,
   .mvCards4,
   .mvPacks {
@@ -1223,6 +1408,22 @@ a {
   }
   .mvStrip .row {
     grid-template-columns: 1fr;
+    gap: 0;
+    padding-block: var(--space-2);
+  }
+  .mvStrip .item {
+    align-items: center;
+    padding: var(--space-4) 0;
+  }
+  .mvStrip .item + .item {
+    border-top: 1px solid var(--border-hairline);
+  }
+  .mvStrip .item svg {
+    margin-top: 0;
+  }
+  .mvStrip .item .d {
+    display: block;
+    margin-top: 2px;
   }
   .mvFooter .grid {
     grid-template-columns: 1fr;
