@@ -3,11 +3,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { LogIn, Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const NAV = [
   ["/#sessions", "Sessions"],
   ["/#coaches", "Coaches"],
+  ["/#gallery", "Gallery"],
   ["/#pricing", "Plans"],
   ["/#contact", "Contact"],
   ["/careers", "Careers"],
@@ -16,6 +17,20 @@ const NAV = [
 export function Header() {
   const [open, setOpen] = useState(false);
   const loginHref = "https://web.movethemovementclan.in/";
+
+  // While the menu is open: lock page scroll and let Escape close it.
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
 
   return (
     <header className="mvHeader">
@@ -45,13 +60,14 @@ export function Header() {
           ))}
         </nav>
         <div className="mvHeadActions">
-          <a className="mvBtn primary" href={loginHref}>
+          <a className="mvBtn primary mvLoginBtn" href={loginHref}>
             <LogIn size={14} /> Login
           </a>
           <button
             type="button"
-            aria-label="Menu"
+            aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
+            aria-controls="mobile-menu"
             onClick={() => setOpen((v) => !v)}
             className="mvBtn secondary mvMenuBtn"
           >
@@ -60,21 +76,23 @@ export function Header() {
         </div>
       </div>
       {open ? (
-        <div style={{ borderTop: "1px solid var(--border-hairline)" }}>
-          <nav
-            className="mv-max"
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "var(--space-4)",
-              padding: "var(--space-5) 0",
-            }}
-          >
+        <div className="mvMobileMenu" id="mobile-menu">
+          <nav className="mv-max" aria-label="Mobile">
             {NAV.map(([href, label]) => (
               <Link key={href} href={href} onClick={() => setOpen(false)}>
                 {label}
               </Link>
             ))}
+            <Link
+              href="/#contact"
+              className="mvBtn primary block"
+              onClick={() => setOpen(false)}
+            >
+              Book a consultation
+            </Link>
+            <a className="mvBtn secondary block" href={loginHref}>
+              <LogIn size={14} /> Login
+            </a>
           </nav>
         </div>
       ) : null}

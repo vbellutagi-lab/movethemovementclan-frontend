@@ -22,7 +22,7 @@ export const client = {
   },
 
   hero: {
-    eyebrow: "Basaveshwar Nagar · Opening Soon",
+    eyebrow: "Basaveshwar Nagar",
     title: "Every Movement Sparks Evolution",
     body: "You walk in on a Tuesday morning or a Thursday night, and whoever is leading the floor knows your injury history, your current maxes, and your daily programming. No repeating yourself. No lost progress.",
     ctaPrimary: { label: "Book a session", href: "#contact" },
