@@ -6,10 +6,12 @@ export function Reveal({
   children,
   className = "",
   delayMs = 0,
+  id,
 }: {
   children: React.ReactNode;
   className?: string;
   delayMs?: number;
+  id?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
@@ -34,6 +36,7 @@ export function Reveal({
   return (
     <div
       ref={ref}
+      id={id}
       className={["mv-reveal", visible && "is-in", className].filter(Boolean).join(" ")}
       style={{ transitionDelay: visible ? `${delayMs}ms` : undefined }}
     >
