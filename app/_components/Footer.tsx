@@ -12,6 +12,7 @@ export function Footer() {
     Contact: "/#contact",
     Careers: "/careers",
     "Client login": loginHref,
+    "Privacy policy": "/privacy-policy",
   };
   return (
     <footer className="mvFooter mv-max">
