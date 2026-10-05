@@ -1526,3 +1526,38 @@ a {
 .reviewMore:hover {
   color: var(--gold-200);
 }
+
+/* ---------- long-form legal text ---------- */
+
+.mvLegal {
+  max-width: 800px;
+  margin: 0 auto;
+  padding-bottom: var(--space-16);
+}
+.mvLegal .head {
+  max-width: none;
+}
+.mvProse {
+  color: var(--text-secondary);
+  font-size: 17px;
+  line-height: 1.75;
+}
+.mvProse h3 {
+  font: 400 22px / 1.3 var(--font-display);
+  color: var(--text-primary, inherit);
+  margin: var(--space-8) 0 var(--space-2);
+}
+.mvProse p,
+.mvProse ul {
+  margin: 0 0 var(--space-3);
+}
+.mvProse ul {
+  padding-left: 20px;
+}
+.mvProse li {
+  margin-bottom: 6px;
+}
+.mvProse a {
+  color: var(--move-gold);
+  text-decoration: underline;
+}
