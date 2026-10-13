@@ -1252,7 +1252,6 @@ a {
   font-size: 11.5px;
   color: var(--ink-400);
 }
-
 /* ---------- whatsapp fab ---------- */
 
 .mvWhatsApp {
@@ -1560,4 +1559,19 @@ a {
 .mvProse a {
   color: var(--move-gold);
   text-decoration: underline;
+}
+
+/* ---------- light (white) page surface ---------- */
+
+.mvLight {
+  --text-primary: var(--move-black);
+  --text-secondary: #3a3633;
+  --text-muted: #6b6560;
+  --border-hairline: #e3ded8;
+  background: #fff;
+  color: var(--move-black);
+}
+.mvLight .mvProse a,
+.mvLight .move-label {
+  color: #8a6a22;
 }
