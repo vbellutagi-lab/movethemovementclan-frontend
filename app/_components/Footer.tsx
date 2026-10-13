@@ -13,6 +13,7 @@ export function Footer() {
     Careers: "/careers",
     "Client login": loginHref,
     "Privacy policy": "/privacy-policy",
+    Blog: "/blogs",
   };
   return (
     <footer className="mvFooter mv-max">

@@ -236,7 +236,7 @@ export const client = {
   footer: {
     tagline: "One profile. Every coach. Zero gaps.",
     train: ["Small group PT", "Personal training", "Conditioning", "Plans"],
-    clan: ["Our coaches", "Contact", "Careers", "Client login", "Privacy policy"],
+    clan: ["Our coaches", "Contact", "Careers", "Client login", "Privacy policy", "Blog"],
     year: 2026,
   },
 } as const;
