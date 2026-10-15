@@ -179,86 +179,257 @@ a {
   justify-content: center;
 }
 
-/* ---------- hero ---------- */
+/* ---------- hero ----------
+   Centred stack, driven by [data-phase] on .mvHero (see Hero.tsx):
+   intro   → the MOVE lockup clip plays in place at the top, copy waits
+   settled → (fires while the logo is still forming) headline rises word by word,
+             then eyebrow, rule, body and CTAs; glow + slope line draw in
+   [data-instant] skips every transition (reduced motion). */
 
 .mvHero {
+  /* --clip-w is the rendered width of the full 1280×720 clip. The lockup is ~30%
+     of that, so 720px → ~220px logo, well under its native ~390px (stays sharp).
+     The stage window crops the clip's empty black sides. */
+  --clip-w: min(640px, 120vw);
   position: relative;
-  min-height: 560px;
+  isolation: isolate;
+  min-height: clamp(600px, calc(100svh - 72px), 900px);
   display: flex;
-  align-items: flex-end;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
-  padding: var(--space-20) var(--space-8) var(--space-16);
-  padding-left: max(
-    var(--space-8),
-    calc((100vw - var(--page-max)) / 2 + var(--space-8))
-  );
+  background: var(--move-black);
+  padding: var(--space-8) var(--space-6) var(--space-16);
+  text-align: center;
 }
-.mvHero .heroImg {
+
+/* Stage: the whole clip, vignetted. The clip is gold on pure black, so `screen`
+   drops the black out and the logo sits right on the brand black. The opening
+   close-up runs off the clip's own edges, so a soft elliptical mask (solid where
+   the final lockup sits, easing to nothing well before the frame edge) melts
+   those cut-offs away — no rectangle ever shows. */
+.mvHero .heroStage {
+  position: relative;
+  z-index: 0;
+  flex: none;
+  width: var(--clip-w);
+  height: calc(var(--clip-w) * 0.5625);
+  /* the clip has ~1/6 empty black above and below the lockup — reclaim it */
+  margin-top: calc(var(--clip-w) * -0.07);
+  margin-bottom: calc(var(--clip-w) * -0.035);
+  mix-blend-mode: screen;
+  -webkit-mask-image: radial-gradient(
+    ellipse 50% 50% at 50% 50%,
+    #000 0%, #000 72%, rgba(0, 0, 0, 0.55) 84%, rgba(0, 0, 0, 0.15) 93%, transparent 100%
+  );
+  mask-image: radial-gradient(
+    ellipse 50% 50% at 50% 50%,
+    #000 0%, #000 72%, rgba(0, 0, 0, 0.55) 84%, rgba(0, 0, 0, 0.15) 93%, transparent 100%
+  );
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 500ms var(--ease-out);
+}
+.mvHero .heroStage[data-playing],
+.mvHero[data-phase="settled"] .heroStage {
+  opacity: 1;
+}
+.mvHero .heroStage video,
+.mvHero .heroStage .heroStill {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.mvHero .heroStage .heroStill {
+  opacity: 0;
+  transition: opacity var(--dur-slow) var(--ease-out);
+}
+.mvHero .heroStage[data-still] .heroStill {
+  opacity: 1;
+}
+
+/* Warm light behind the kettlebell. */
+.mvHero .heroGlow {
   position: absolute;
   inset: 0;
   z-index: -1;
+  background: radial-gradient(
+    36% 34% at 50% 24%,
+    rgba(224, 181, 105, 0.12),
+    rgba(224, 181, 105, 0) 70%
+  );
+  opacity: 0;
+  transition: opacity 900ms var(--ease-out);
 }
-.mvHero .heroImg img {
-  object-fit: cover;
-  object-position: 72% 38%;
-  filter: saturate(0.85) contrast(1.05);
+.mvHero[data-phase="settled"] .heroGlow {
+  opacity: 1;
 }
-.mv-breath {
-  animation: mv-breath 26s ease-in-out infinite;
-  transform-origin: 60% 45%;
-}
-@keyframes mv-breath {
-  0%,
-  100% {
-    transform: scale(1.03);
-  }
-  50% {
-    transform: scale(1.09);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .mv-breath {
-    animation: none;
-  }
-}
-.mvHero .scrimL {
+
+/* The slope from the logo, extended across the hero floor. */
+.mvHero .heroSlope {
   position: absolute;
-  inset: 0;
-  background: var(--scrim-left);
+  left: 0;
+  bottom: 0;
+  z-index: 0;
+  width: 100%;
+  height: 30%;
+  pointer-events: none;
 }
-.mvHero .scrimB {
-  position: absolute;
-  inset: 0;
-  background: var(--scrim-bottom);
+.mvHero .heroSlope path {
+  fill: none;
+  stroke: url(#mvSlope);
+  stroke-width: 1.2;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 1000ms var(--ease-in-out) 300ms;
 }
+.mvHero[data-phase="settled"] .heroSlope path {
+  stroke-dashoffset: 0;
+}
+
+/* Copy */
 .mvHero .inner {
   position: relative;
-  max-width: 600px;
+  z-index: 1;
+  max-width: 760px;
   display: flex;
   flex-direction: column;
-  gap: var(--space-5);
+  align-items: center;
+  gap: var(--space-4);
+  margin-top: var(--space-2);
 }
+/* eyebrow, rule, body, CTAs: quick fade-up */
+.mvHero .inner > :not(h1) {
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 450ms var(--ease-out),
+    transform 450ms var(--ease-out);
+}
+.mvHero[data-phase="settled"] .inner > :not(h1) {
+  opacity: 1;
+  transform: none;
+}
+.mvHero[data-phase="settled"] .inner > :nth-child(1) { transition-delay: 0ms; }
+.mvHero[data-phase="settled"] .inner > :nth-child(3) { transition-delay: 420ms; }
+.mvHero[data-phase="settled"] .inner > :nth-child(4) { transition-delay: 480ms; }
+.mvHero[data-phase="settled"] .inner > :nth-child(5) { transition-delay: 560ms; }
+
 .mvHero h1 {
-  font: 400 clamp(38px, 5vw, 68px) / 1.05 var(--font-display);
+  font: 400 clamp(36px, 5.2vw, 72px) / 1.05 var(--font-display);
   margin: 0;
   letter-spacing: var(--tracking-display);
+  text-wrap: balance;
 }
+/* Headline: each word rises out of its own clipped line. */
+.mvHero h1 .w {
+  display: inline-block;
+  overflow: hidden;
+  /* room for descenders inside the clip */
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+  vertical-align: top;
+}
+.mvHero h1 .w > span {
+  display: inline-block;
+  transform: translateY(105%);
+  transition: transform 650ms cubic-bezier(.2, .8, .2, 1);
+  transition-delay: calc(80ms + var(--i) * 70ms);
+}
+.mvHero[data-phase="settled"] h1 .w > span {
+  transform: none;
+}
+/* last word lands in gold */
+.mvHero h1 .w:last-child > span {
+  color: var(--move-gold);
+}
+
 .mvHero .rule {
-  width: 64px;
+  width: 56px;
   height: 2px;
   background: var(--move-gold);
+  transform-origin: center;
+}
+/* the rule draws instead of rising */
+.mvHero .inner > .rule {
+  transform: scaleX(0);
+}
+.mvHero[data-phase="settled"] .inner > .rule {
+  transform: scaleX(1);
 }
 .mvHero p {
   font-size: var(--text-body-lg);
   color: var(--text-secondary);
-  max-width: 580px;
+  max-width: 600px;
   line-height: 1.6;
+  margin: 0;
 }
 .mvHero .ctaRow {
   display: flex;
+  justify-content: center;
   gap: 12px;
   margin-top: 6px;
   flex-wrap: wrap;
+}
+
+.mvHero .heroReplay {
+  position: absolute;
+  right: max(var(--space-8), calc((100vw - var(--page-max)) / 2 + var(--space-8)));
+  bottom: var(--space-6);
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid var(--border-hairline);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity var(--dur-slow) var(--ease-out) 900ms,
+    color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out);
+}
+.mvHero[data-phase="settled"] .heroReplay {
+  opacity: 1;
+  pointer-events: auto;
+}
+.mvHero .heroReplay:hover,
+.mvHero .heroReplay:focus-visible {
+  color: var(--move-gold);
+  border-color: var(--move-gold);
+}
+
+.mvHero[data-instant] *,
+.mvHero[data-instant] .inner > * {
+  transition: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .mvHero * {
+    transition: none !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .mvHero {
+    min-height: auto;
+    padding-top: var(--space-6);
+  }
+  .mvHero .heroReplay {
+    top: var(--space-4);
+    bottom: auto;
+    right: var(--space-4);
+  }
 }
 
 /* ---------- sync strip ---------- */
@@ -489,12 +660,14 @@ a {
 }
 .mvAbout .photo img {
   object-fit: cover;
-  object-position: 35% 50%;
+  /* portrait shot in a 3:2 frame — keep the moon wall, mountains and benches in view */
+  object-position: 50% 48%;
 }
 .mvAbout .photo .scrim {
   position: absolute;
   inset: 0;
-  background: var(--scrim-bottom);
+  /* nothing sits on this photo, so only a light fade at the foot */
+  background: linear-gradient(to top, rgba(17, 14, 12, 0.45) 0%, rgba(17, 14, 12, 0) 40%);
 }
 
 /* ---------- coaches ---------- */
@@ -712,16 +885,45 @@ a {
 
 /* ---------- gallery ---------- */
 
+/* Mobile first: a swipeable, snap-scrolling row that bleeds to the screen edges,
+   with the next card peeking in. Cards are fixed-width (the reel embed is pinned
+   at 280px). Once all of them fit side by side, it becomes a plain row. */
 .mvGallery {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 328px), 1fr));
-  gap: var(--space-5);
-  justify-items: start;
+  --g: var(--space-8); /* matches .mv-max's side gutter */
+  display: flex;
+  gap: var(--space-3);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--g);
+  margin-inline: calc(-1 * var(--g));
+  /* vertical room so the hover lift and shadow aren't clipped by the scroller */
+  padding: 6px var(--g) var(--space-5);
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.mvGallery::-webkit-scrollbar {
+  display: none;
 }
 .mvGallery .galleryItem {
   scroll-margin-top: 120px; /* clear the sticky header when jumping to /#gallery-<id> */
-  width: 100%;
-  max-width: 284px;
+  flex: none;
+  width: 282px;
+  scroll-snap-align: start;
+}
+@media (max-width: 640px) {
+  .mvGallery {
+    --g: var(--space-5);
+  }
+}
+@media (min-width: 1200px) {
+  .mvGallery {
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    overflow: visible;
+    margin-inline: 0;
+    padding: 0;
+  }
 }
 .mvGallery .reelCard {
   margin: 0;
@@ -758,6 +960,21 @@ a {
   margin: -54px 0 0 -60px;
   border: 0;
 }
+.mvGallery .photoMedia {
+  position: relative;
+}
+.mvGallery .photoMedia img {
+  object-fit: cover;
+  transition: transform 0.6s var(--ease-out);
+}
+.mvGallery .reelCard:hover .photoMedia img {
+  transform: scale(1.04);
+}
+.mvGallery .photoLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
 .mvGallery .reelCaption {
   display: flex;
   align-items: center;
@@ -782,6 +999,12 @@ a {
     transition: none;
   }
   .mvGallery .reelCard:hover {
+    transform: none;
+  }
+  .mvGallery .photoMedia img {
+    transition: none;
+  }
+  .mvGallery .reelCard:hover .photoMedia img {
     transform: none;
   }
 }
