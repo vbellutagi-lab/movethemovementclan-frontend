@@ -27,7 +27,6 @@ export const client = {
     body: "You walk in on a Tuesday morning or a Thursday night, and whoever is leading the floor knows your injury history, your current maxes, and your daily programming. No repeating yourself. No lost progress.",
     ctaPrimary: { label: "Book a session", href: "#contact" },
     ctaSecondary: { label: "See plans", href: "#pricing" },
-    image: "/images/athlete-chalk.png",
   },
 
   syncStrip: [
@@ -80,11 +79,11 @@ export const client = {
     // Phrases from `body` to render in gold — exact substring matches, case-insensitive.
     highlights: ["injury history", "current maxes", "daily programming"],
     stats: [
-      { label: "Members", value: "16" },
+      { label: "Members", value: "30" },
       { label: "Coaches", value: "3" },
       { label: "Max per group", value: "8" },
     ],
-    image: "/images/studio-interior.png",
+    image: "/images/studio/studio.png",
   },
 
   coaches: [
@@ -211,17 +210,17 @@ export const client = {
     roles: [
       {
         title: "Small group coach",
-        meta: "Full-time · Indiranagar",
+        meta: "Full-time · Basaveshwar Nagar",
         detail: "L2 kettlebell or equivalent, 2+ years on a floor.",
       },
       {
         title: "Personal trainer",
-        meta: "Full-time · Indiranagar",
+        meta: "Full-time · Basaveshwar Nagar",
         detail: "CSCS/CPT with rehab-adjacent experience.",
       },
       {
         title: "Front desk & member ops",
-        meta: "Part-time · Indiranagar",
+        meta: "Part-time · Basaveshwar Nagar",
         detail: "Mornings, 5:30–11:00.",
       },
     ],
@@ -236,7 +235,14 @@ export const client = {
   footer: {
     tagline: "One profile. Every coach. Zero gaps.",
     train: ["Small group PT", "Personal training", "Conditioning", "Plans"],
-    clan: ["Our coaches", "Contact", "Careers", "Client login", "Privacy policy", "Blog"],
+    clan: [
+      "Our coaches",
+      "Contact",
+      "Careers",
+      "Client login",
+      "Privacy policy",
+      "Blog",
+    ],
     year: 2026,
   },
 } as const;

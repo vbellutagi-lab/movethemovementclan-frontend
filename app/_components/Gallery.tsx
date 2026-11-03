@@ -1,7 +1,14 @@
+import Image from "next/image";
 import { InstagramIcon } from "./SocialIcons";
 import { Reveal } from "./Reveal";
 
 const INSTAGRAM_REELS = [{ id: "Dd2sPOizS0v", title: "Move — Instagram reel" }];
+
+const STUDIO_PHOTOS = [
+  { src: "/images/studio/studio.png", alt: "Strength floor with benches, kettlebells and the moon wall", label: "Strength floor" },
+  { src: "/images/studio/studio2.png", alt: "Spin studio with rows of bikes under blue lights", label: "Spin studio" },
+  { src: "/images/studio/studio3.png", alt: "Functional rig, turf lane and the coffee bar", label: "Functional zone" },
+];
 
 export function Gallery() {
   return (
@@ -39,6 +46,23 @@ export function Gallery() {
                 >
                   <InstagramIcon size={14} /> Watch on Instagram
                 </a>
+              </figcaption>
+            </figure>
+          </Reveal>
+        ))}
+        {STUDIO_PHOTOS.map((photo, i) => (
+          <Reveal
+            key={photo.src}
+            delayMs={(INSTAGRAM_REELS.length + i) * 100}
+            className="galleryItem"
+          >
+            <figure className="reelCard">
+              <div className="reelMedia photoMedia">
+                <Image src={photo.src} alt={photo.alt} fill sizes="280px" />
+              </div>
+              <figcaption className="reelCaption">
+                <span className="move-label">Studio</span>
+                <span className="photoLabel">{photo.label}</span>
               </figcaption>
             </figure>
           </Reveal>
