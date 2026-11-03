@@ -79,7 +79,7 @@ export const client = {
     // Phrases from `body` to render in gold — exact substring matches, case-insensitive.
     highlights: ["injury history", "current maxes", "daily programming"],
     stats: [
-      { label: "Members", value: "26" },
+      { label: "Members", value: "30" },
       { label: "Coaches", value: "3" },
       { label: "Max per group", value: "8" },
     ],
