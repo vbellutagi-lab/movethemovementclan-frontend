@@ -210,17 +210,17 @@ export const client = {
     roles: [
       {
         title: "Small group coach",
-        meta: "Full-time · Indiranagar",
+        meta: "Full-time · Basaveshwar Nagar",
         detail: "L2 kettlebell or equivalent, 2+ years on a floor.",
       },
       {
         title: "Personal trainer",
-        meta: "Full-time · Indiranagar",
+        meta: "Full-time · Basaveshwar Nagar",
         detail: "CSCS/CPT with rehab-adjacent experience.",
       },
       {
         title: "Front desk & member ops",
-        meta: "Part-time · Indiranagar",
+        meta: "Part-time · Basaveshwar Nagar",
         detail: "Mornings, 5:30–11:00.",
       },
     ],
