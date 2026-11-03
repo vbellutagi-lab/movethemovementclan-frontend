@@ -8,7 +8,7 @@ import { WhatsAppButton } from "./_components/WhatsAppButton";
 export const metadata: Metadata = {
   title: "Move — The Movement Clan",
   description:
-    "Move is a small-group and one-on-one personal training studio in Indiranagar. One profile. Every coach. Zero gaps.",
+    "Move is a small-group and one-on-one personal training studio in Basaveshwar Nagar, Bengaluru. One profile. Every coach. Zero gaps.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
